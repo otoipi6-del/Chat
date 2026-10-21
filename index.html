@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepSeek Chat</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <div class="logo">
+        <i class="fas fa-robot"></i>
+        <span>DeepSeek</span>
+      </div>
+    </div>
+    <button class="new-chat-btn">
+      <i class="fas fa-plus"></i>
+      <span>New Chat</span>
+    </button>
+    <div class="chat-history">
+      <div class="chat-item active">How to learn JavaScript quickly?</div>
+      <div class="chat-item">Python vs JavaScript comparison</div>
+      <div class="chat-item">Explain quantum computing</div>
+      <div class="chat-item">Best practices for React development</div>
+      <div class="chat-item">How to build a REST API with Node.js</div>
+      <div class="chat-item">Machine learning fundamentals</div>
+      <div class="chat-item">CSS Grid layout examples</div>
+      <div class="chat-item">What is TypeScript and why use it?</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-name">John Doe</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Chat Area -->
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-title">How to learn JavaScript quickly?</div>
+      <div class="chat-actions">
+        <button class="action-btn" title="Clear conversation">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button class="action-btn" title="Share chat">
+          <i class="fas fa-share"></i>
+        </button>
+      </div>
+    </div>
+    <div class="messages-container" id="messagesContainer">
+      <div class="message">
+        <div class="avatar user-avatar">JD</div>
+        <div class="message-content">
+          <div class="message-header">
+            <div class="sender-name">You</div>
+            <div class="message-time">10:30 AM</div>
+          </div>
+          <div class="message-text user-message">
+            How can I learn JavaScript quickly? I need to become proficient in 2 months.
+          </div>
+        </div>
+      </div>
+      <div class="message">
+        <div class="avatar ai-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+          <div class="message-header">
+            <div class="sender-name">DeepSeek</div>
+            <div class="message-time">10:32 AM</div>
+          </div>
+          <div class="message-text ai-message">
+            <p>Learning JavaScript quickly requires a focused approach. Here's a 2-month plan:</p>
+            <ol>
+              <li><strong>Weeks 1-2:</strong> Master fundamentals - variables, functions, loops, arrays, objects</li>
+              <li><strong>Weeks 3-4:</strong> DOM manipulation and event handling</li>
+              <li><strong>Weeks 5-6:</strong> Async programming (callbacks, promises, async/await)</li>
+              <li><strong>Weeks 7-8:</strong> Build projects and learn a framework (React or Vue)</li>
+            </ol>
+            <p>Practice daily with coding exercises and small projects.</p>
+          </div>
+        </div>
+      </div>
+      <div class="message">
+        <div class="avatar user-avatar">JD</div>
+        <div class="message-content">
+          <div class="message-header">
+            <div class="sender-name">You</div>
+            <div class="message-time">10:35 AM</div>
+          </div>
+          <div class="message-text user-message">
+            What are the best resources for learning?
+          </div>
+        </div>
+      </div>
+      <div class="message">
+        <div class="avatar ai-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="message-content">
+          <div class="message-header">
+            <div class="sender-name">DeepSeek</div>
+            <div class="message-time">10:36 AM</div>
+          </div>
+          <div class="message-text ai-message">
+            <p>Here are excellent resources for learning JavaScript:</p>
+            <ul>
+              <li><strong>FreeCodeCamp:</strong> Comprehensive free curriculum</li>
+              <li><strong>MDN Web Docs:</strong> Authoritative reference</li>
+              <li><strong>Eloquent JavaScript:</strong> Free online book</li>
+              <li><strong>JavaScript.info:</strong> Modern tutorial</li>
+              <li><strong>Codecademy:</strong> Interactive learning</li>
+            </ul>
+            <p>For projects, try Frontend Mentor challenges or build a personal website.</p>
+          </div>
+        </div>
+      </div>
+      <div class="typing-indicator" id="typingIndicator" style="display: none;">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+    <div class="input-container">
+      <div class="input-box">
+        <textarea class="message-input" id="messageInput" placeholder="Message DeepSeek..." rows="1"></textarea>
+        <button class="send-btn" id="sendButton" disabled>
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
