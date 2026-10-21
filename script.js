@@ -1,17 +1,27 @@
-// DOM Elements
+// ==========================================
+// НАСТРОЙКИ
+// ==========================================
+// ВАЖНО: Сюда мы вставим URL вашего Cloudflare Worker на следующем шаге.
+// Пока оставляем заглушку, чтобы код не ломался.
+const PROXY_URL = "https://ВАШ_WORKER_URL.workers.dev"; 
+
+// ==========================================
+// DOM ЭЛЕМЕНТЫ
+// ==========================================
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const messagesContainer = document.getElementById('messagesContainer');
 const typingIndicator = document.getElementById('typingIndicator');
 
-// Auto-resize textarea
+// ==========================================
+// ОБРАБОТЧИКИ СОБЫТИЙ
+// ==========================================
 messageInput.addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = (this.scrollHeight) + 'px';
   sendButton.disabled = this.value.trim() === '';
 });
 
-// Send message on Enter (Shift+Enter for new line)
 messageInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -21,37 +31,89 @@ messageInput.addEventListener('keydown', function(e) {
   }
 });
 
-// Send button click handler
 sendButton.addEventListener('click', sendMessage);
 
-// Function to send a message
-function sendMessage() {
+// ==========================================
+// ОСНОВНАЯ ЛОГИКА ЧАТА
+// ==========================================
+async function sendMessage() {
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
+  // 1. Добавляем сообщение пользователя
   addMessage('user', messageText, 'You');
 
+  // 2. Очищаем поле ввода
   messageInput.value = '';
   messageInput.style.height = 'auto';
   sendButton.disabled = true;
 
+  // 3. Показываем индикатор набора текста
   typingIndicator.style.display = 'flex';
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-  // Демо-ответ (будет заменён на реальный запрос к DeepSeek на следующем шаге)
-  setTimeout(() => {
+  try {
+    // 4. Отправляем запрос на Cloudflare Worker
+    // (Временно используется заглушка, если PROXY_URL не заменен, будет ошибка)
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat", // Модель по умолчанию
+        messages: [{ role: "user", content: messageText }],
+        stream: false
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ошибка сервера: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Извлекаем текст ответа из структуры ответа DeepSeek/OpenAI
+    const aiResponse = data.choices[0].message.content;
+
+    // 5. Скрываем индикатор и добавляем ответ
     typingIndicator.style.display = 'none';
-    const aiResponse = generateAIResponse(messageText);
     addMessage('ai', aiResponse, 'AIChat');
-  }, 1500);
+
+  } catch (error) {
+    // Обработка ошибок (например, если Worker не настроен)
+    typingIndicator.style.display = 'none';
+    addMessage('ai', `Произошла ошибка: ${error.message}. Проверьте настройки прокси.`, 'System');
+    console.error(error);
+  }
 }
 
-// Function to add a message to the chat
+// ==========================================
+// ФУНКЦИИ ОТОБРАЖЕНИЯ
+// ==========================================
 function addMessage(sender, text, senderName) {
   const messageDiv = document.createElement('div');
   messageDiv.className = 'message';
-
   const isAI = sender === 'ai';
+  const isSystem = senderName === 'System';
+
+  // Форматируем текст (заменяем переносы строк на <br>)
+  const formattedText = text.replace(/\n/g, '<br>');
+
+  // Для AI-сообщений добавляем кнопки копирования и скачивания
+  let actionButtonsHtml = '';
+  if (isAI && !isSystem) {
+    actionButtonsHtml = `
+      <div class="message-actions" style="margin-top: 10px; display: flex; gap: 10px;">
+        <button class="action-btn copy-btn" title="Копировать" style="background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+          <i class="fas fa-copy"></i> Копировать
+        </button>
+        <button class="action-btn docx-btn" title="Скачать DOCX" style="background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+          <i class="fas fa-file-word"></i> Скачать DOCX
+        </button>
+      </div>
+    `;
+  }
 
   messageDiv.innerHTML = `
     <div class="avatar ${isAI ? 'ai-avatar' : 'user-avatar'}">${isAI ? '<i class="fas fa-robot"></i>' : 'JD'}</div>
@@ -61,21 +123,71 @@ function addMessage(sender, text, senderName) {
         <div class="message-time">${getCurrentTime()}</div>
       </div>
       <div class="message-text ${isAI ? 'ai-message' : 'user-message'}">
-        ${formatMessageText(text)}
+        ${formattedText}
       </div>
+      ${actionButtonsHtml}
     </div>
   `;
+
+  // Привязываем события к кнопкам (если это AI-сообщение)
+  if (isAI && !isSystem) {
+    const copyBtn = messageDiv.querySelector('.copy-btn');
+    const docxBtn = messageDiv.querySelector('.docx-btn');
+
+    copyBtn.addEventListener('click', () => copyToClipboard(text));
+    docxBtn.addEventListener('click', () => downloadAsDocx(text));
+  }
 
   messagesContainer.insertBefore(messageDiv, typingIndicator);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// Helper function to format message text
-function formatMessageText(text) {
-  return text.replace(/\n/g, '<br>');
+// ==========================================
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (Копирование и DOCX)
+// ==========================================
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert('Текст скопирован в буфер обмена!');
+  } catch (err) {
+    console.error('Ошибка копирования:', err);
+    alert('Не удалось скопировать текст.');
+  }
 }
 
-// Helper function to get current time in HH:MM AM/PM format
+function downloadAsDocx(text) {
+  if (typeof htmlDocx === 'undefined') {
+    alert('Библиотека для создания DOCX не загружена.');
+    return;
+  }
+
+  // Формируем простой HTML для документа
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"></head>
+    <body>
+      <p>${text.replace(/\n/g, "</p><p>")}</p>
+    </body>
+    </html>
+  `;
+  
+  try {
+    const blob = htmlDocx.asBlob(htmlContent);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `AIChat_Response_${Date.now()}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Ошибка создания DOCX:', err);
+    alert('Не удалось создать файл DOCX.');
+  }
+}
+
 function getCurrentTime() {
   const now = new Date();
   let hours = now.getHours();
@@ -86,44 +198,12 @@ function getCurrentTime() {
   return `${hours}:${minutes} ${ampm}`;
 }
 
-// Демо-генератор ответов (временно)
-function generateAIResponse(userMessage) {
-  const responses = [
-    "I understand you're asking about JavaScript learning. The key is consistent practice and building projects.",
-    "That's a great question! JavaScript can be learned effectively by focusing on practical applications.",
-    "Based on your query, I recommend starting with core concepts before moving to frameworks.",
-    "Many learners find success with a structured approach. Would you like me to outline a study plan?",
-    "JavaScript mastery comes from understanding both theory and practice. Let me suggest some exercises."
-  ];
-
-  if (userMessage.toLowerCase().includes('resource') || userMessage.toLowerCase().includes('learn')) {
-    return `For learning resources, I recommend:<br><br>
-            - MDN Web Docs (comprehensive reference)<br>
-            - freeCodeCamp (interactive tutorials)<br>
-            - Eloquent JavaScript (free online book)<br><br>
-            Practice daily with small coding challenges to reinforce concepts.`;
-  }
-
-  if (userMessage.toLowerCase().includes('time') || userMessage.toLowerCase().includes('long')) {
-    return `The time needed to learn JavaScript depends on your background:<br><br>
-            - Basic proficiency: 2-3 months with daily practice<br>
-            - Intermediate level: 6 months with project work<br>
-            - Advanced concepts: 1+ year of consistent learning<br><br>
-            Focus on understanding rather than rushing through topics.`;
-  }
-
-  return responses[Math.floor(Math.random() * responses.length)];
-}
-
-// Chat history item click handler
-document.querySelectorAll('.chat-item').forEach(item => {
-  item.addEventListener('click', function() {
-    document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-
-// New chat button handler
+// Обработчик кнопки "New Chat" (очистка чата)
 document.querySelector('.new-chat-btn').addEventListener('click', function() {
-  alert('Starting a new chat...');
+  // Очищаем контейнер сообщений, оставляя только индикатор
+  const messages = messagesContainer.querySelectorAll('.message');
+  messages.forEach(msg => msg.remove());
+  
+  // Сбрасываем заголовок
+  document.querySelector('.chat-title').textContent = "New Chat";
 });
