@@ -164,13 +164,14 @@ body {
   justify-content: space-between;
   background-color: var(--chat-bg);
   flex-shrink: 0;
+  gap: 16px; /* Отступ между левой и правой частью */
 }
 
 .chat-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0; /* Запрещаем сжимать название */
+  flex-shrink: 0; /* Запрещаем сжимать левую часть */
 }
 
 .hamburger-btn {
@@ -187,32 +188,34 @@ body {
   background-color: #e5e7eb;
 }
 
-/* Убираем перенос названия */
+/* УВЕЛИЧЕННЫЙ шрифт названия */
 .chat-title {
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700; /* Жирнее */
+  font-size: 20px;  /* Крупнее */
   white-space: nowrap; 
+  color: var(--text-primary);
 }
 
 .chat-header-right {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 1;
-  overflow: hidden; /* Скрываем лишнее, если не влезает */
+  flex-shrink: 1; /* Разрешаем сжиматься */
+  min-width: 0; /* Важно для сжатия */
 }
 
-/* УМЕНЬШЕННЫЕ ЯЧЕЙКИ МОДЕЛЕЙ */
+/* ЯЧЕЙКИ МОДЕЛЕЙ (теперь могут сжиматься) */
 .provider-select {
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-size: 13px; /* Чуть меньше шрифт */
+  font-size: 13px;
   cursor: pointer;
   outline: none;
-  max-width: 130px; /* Ограничиваем ширину */
+  min-width: 80px; /* Минимальная ширина */
+  max-width: 150px; /* Максимальная ширина */
   text-overflow: ellipsis;
 }
 
@@ -234,7 +237,7 @@ body {
 
 .message-wrapper {
   width: 100%;
-  max-width: 768px;
+  max-width: 768px; /* Ширина карточки */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -324,7 +327,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 2px; /* УМЕНЬШИЛИ ОТСТУП, чтобы приблизить к тексту */
+  margin-bottom: 2px; 
   width: 100%;
 }
 
@@ -411,12 +414,14 @@ body {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
+  width: 100%; /* Растягиваем контейнер на всю ширину */
 }
 
+/* ВЫРАВНИВАЕМ ШИРИНУ ПОЛЯ ВВОДА С КАРТОЧКОЙ */
 .input-box {
   position: relative;
   width: 100%;
-  max-width: 768px;
+  max-width: 768px; /* Такая же ширина, как у карточки */
   display: flex;
   align-items: flex-end;
   border: 2px solid #d1d5db;
@@ -504,17 +509,23 @@ body {
 
   .chat-header {
     padding: 12px;
+    gap: 8px;
   }
 
   .chat-header-right {
     gap: 6px;
   }
 
-  /* На мобильных делаем селекты еще меньше */
+  /* Еще сильнее сжимаем селекты на мобильных */
   .provider-select {
-    max-width: 90px;
+    max-width: 100px;
     font-size: 12px;
     padding: 4px 6px;
+    min-width: 60px;
+  }
+
+  .chat-title {
+    font-size: 18px; /* Чуть меньше на мобильных, чтобы влезло */
   }
 
   .messages-container {
@@ -529,9 +540,8 @@ body {
     max-width: 90%;
   }
 
-  /* СИЛЬНО УВЕЛИЧИВАЕМ ШРИФТ ДЛЯ МОБИЛЬНЫХ */
   .message-text {
-    font-size: 18px; /* Еще крупнее */
+    font-size: 18px;
   }
 
   .message-input {
@@ -542,16 +552,7 @@ body {
     font-size: 16px;
   }
 
-  /* Убираем лишние отступы у имен */
   .message-header {
     margin-bottom: 2px;
-  }
-
-  .welcome-screen h1 {
-    font-size: 24px;
-  }
-
-  .welcome-screen p {
-    font-size: 17px;
   }
 }
