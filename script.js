@@ -1,12 +1,25 @@
 // ==========================================
-// НАСТРОЙКИ
+// НАСТРОЙКИ И ДАННЫЕ ПРОВАЙДЕРОВ
 // ==========================================
-// URL твоего Cloudflare Worker
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
 
-// Выбранный провайдер (по умолчанию deepseek)
-// В будущем это можно будет менять через выпадающий список в интерфейсе
-let currentProvider = "deepseek"; 
+// Список моделей для каждого провайдера
+const PROVIDER_MODELS = {
+  groq: [
+    'openai/gpt-oss-120b',
+    'qwen/qwen3-32b',
+    'llama-3.1-8b-instant'
+  ],
+  deepseek: [
+    'deepseek-chat',
+    'deepseek-reasoner'
+  ],
+  openrouter: [
+    'openrouter/free',
+    'deepseek/deepseek-r1:free',
+    'meta-llama/llama-3.2-3b-instruct:free'
+  ]
+};
 
 // ==========================================
 // DOM ЭЛЕМЕНТЫ
@@ -15,9 +28,37 @@ const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const messagesContainer = document.getElementById('messagesContainer');
 const typingIndicator = document.getElementById('typingIndicator');
+const providerSelect = document.getElementById('providerSelect');
+const modelSelect = document.getElementById('modelSelect');
 
 // ==========================================
-// ОБРАБОТЧИКИ СОБЫТИЙ
+// ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
+// ==========================================
+// Функция обновления списка моделей при смене провайдера
+function updateModelList() {
+  const provider = providerSelect.value;
+  const models = PROVIDER_MODELS[provider] || [];
+  
+  // Очищаем текущий список
+  modelSelect.innerHTML = '';
+  
+  // Заполняем новыми моделями
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model;
+    option.textContent = model;
+    modelSelect.appendChild(option);
+  });
+}
+
+// Слушатель изменения провайдера
+providerSelect.addEventListener('change', updateModelList);
+
+// Инициализация списка моделей при загрузке страницы (по умолчанию Groq)
+updateModelList();
+
+// ==========================================
+// ОБРАБОТЧИКИ ВВОДА
 // ==========================================
 messageInput.addEventListener('input', function() {
   this.style.height = 'auto';
@@ -53,15 +94,9 @@ async function sendMessage() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    // Определяем модель в зависимости от провайдера
-    let modelName = "";
-    if (currentProvider === "groq") {
-      modelName = "llama-3.3-70b-versatile";
-    } else if (currentProvider === "openrouter") {
-      modelName = "openrouter/free"; // бесплатная модель
-    } else {
-      modelName = "deepseek-chat";
-    }
+    // Получаем выбранные значения из списков
+    const selectedProvider = providerSelect.value;
+    const selectedModel = modelSelect.value;
 
     const response = await fetch(PROXY_URL, {
       method: 'POST',
@@ -69,8 +104,8 @@ async function sendMessage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        provider: currentProvider,
-        model: modelName,
+        provider: selectedProvider, // передаем выбранного провайдера
+        model: selectedModel,       // передаем выбранную модель
         messages: [{ role: "user", content: messageText }],
         stream: false
       }),
@@ -81,8 +116,6 @@ async function sendMessage() {
     }
 
     const data = await response.json();
-    
-    // Извлекаем текст ответа
     const aiResponse = data.choices[0].message.content;
 
     typingIndicator.style.display = 'none';
