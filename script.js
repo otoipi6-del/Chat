@@ -64,11 +64,9 @@ updateModelList();
 let currentChatId = null;
 let chats = JSON.parse(localStorage.getItem('chat_history')) || [];
 
-// Функция отрисовки списка чатов в сайдбаре
 function renderChatHistory() {
   chatHistoryContainer.innerHTML = '';
   
-  // Фильтруем пустые чаты (без сообщений), чтобы они не забивали список
   const validChats = chats.filter(chat => chat.messages.length > 0);
   
   validChats.forEach(chat => {
@@ -90,7 +88,6 @@ function renderChatHistory() {
   });
 }
 
-// Загрузка конкретного чата
 function loadChat(id) {
   const chat = chats.find(c => c.id === id);
   if (!chat) return;
@@ -99,25 +96,22 @@ function loadChat(id) {
   renderChatHistory();
   clearMessagesUI();
   
-  // Восстанавливаем сообщения из памяти
   chat.messages.forEach(msg => {
     addMessageToUI(msg.sender, msg.text, msg.senderName, false);
   });
   
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-  // ЗАКРЫВАЕМ САЙДБАР ПРИ КЛИКЕ НА ЧАТ (особенно на мобильных)
+  // Закрываем сайдбар на мобильных при выборе чата
   if (window.innerWidth <= 768) {
     sidebar.classList.add('hidden');
   }
 }
 
-// Сохранение массива чатов
 function saveChats() {
   localStorage.setItem('chat_history', JSON.stringify(chats));
 }
 
-// Добавление нового сообщения в текущий чат
 function updateCurrentChat(sender, text, senderName) {
   if (!currentChatId) return;
   
@@ -125,7 +119,6 @@ function updateCurrentChat(sender, text, senderName) {
   if (chat) {
     chat.messages.push({ sender, text, senderName });
     
-    // Если это первое сообщение пользователя, даем чату название
     if (chat.messages.length === 1 && sender === 'user') {
       chat.title = text.substring(0, 25) + (text.length > 25 ? '...' : '');
       renderChatHistory();
@@ -135,7 +128,6 @@ function updateCurrentChat(sender, text, senderName) {
   }
 }
 
-// Очистка экрана сообщений (без удаления истории)
 function clearMessagesUI() {
   const messages = messagesContainer.querySelectorAll('.message-wrapper');
   messages.forEach(msg => msg.remove());
@@ -186,14 +178,13 @@ closeSidebarBtn.addEventListener('click', () => {
   sidebar.classList.add('hidden');
 });
 
-// Кнопка "New Chat" - создает новый чат БЕЗ записи в историю
 newChatBtn.addEventListener('click', () => {
-  currentChatId = null; // Сбрасываем текущий ID
-  clearMessagesUI();    // Очищаем экран
-  renderChatHistory();  // Снимаем выделение с истории
+  currentChatId = null;
+  clearMessagesUI();
+  renderChatHistory();
   
   if (window.innerWidth <= 768) {
-    sidebar.classList.add('hidden'); // Закрываем меню на телефоне
+    sidebar.classList.add('hidden');
   }
   
   messageInput.focus();
@@ -206,7 +197,6 @@ async function sendMessage() {
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
-  // Если нет активного чата, создаем новый в памяти
   if (!currentChatId) {
     currentChatId = Date.now().toString();
     chats.unshift({
@@ -220,7 +210,6 @@ async function sendMessage() {
     welcomeScreen.style.display = 'none';
   }
 
-  // Добавляем на экран и в память
   addMessageToUI('user', messageText, 'Вы');
   updateCurrentChat('user', messageText, 'Вы');
 
