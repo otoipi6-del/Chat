@@ -1,9 +1,12 @@
 // ==========================================
 // НАСТРОЙКИ
 // ==========================================
-// ВАЖНО: Сюда мы вставим URL вашего Cloudflare Worker на следующем шаге.
-// Пока оставляем заглушку, чтобы код не ломался.
-const PROXY_URL = "https://ВАШ_WORKER_URL.workers.dev"; 
+// URL твоего Cloudflare Worker
+const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
+
+// Выбранный провайдер (по умолчанию deepseek)
+// В будущем это можно будет менять через выпадающий список в интерфейсе
+let currentProvider = "deepseek"; 
 
 // ==========================================
 // DOM ЭЛЕМЕНТЫ
@@ -40,28 +43,34 @@ async function sendMessage() {
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
-  // 1. Добавляем сообщение пользователя
   addMessage('user', messageText, 'You');
 
-  // 2. Очищаем поле ввода
   messageInput.value = '';
   messageInput.style.height = 'auto';
   sendButton.disabled = true;
 
-  // 3. Показываем индикатор набора текста
   typingIndicator.style.display = 'flex';
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    // 4. Отправляем запрос на Cloudflare Worker
-    // (Временно используется заглушка, если PROXY_URL не заменен, будет ошибка)
+    // Определяем модель в зависимости от провайдера
+    let modelName = "";
+    if (currentProvider === "groq") {
+      modelName = "llama-3.3-70b-versatile";
+    } else if (currentProvider === "openrouter") {
+      modelName = "openrouter/free"; // бесплатная модель
+    } else {
+      modelName = "deepseek-chat";
+    }
+
     const response = await fetch(PROXY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "deepseek-chat", // Модель по умолчанию
+        provider: currentProvider,
+        model: modelName,
         messages: [{ role: "user", content: messageText }],
         stream: false
       }),
@@ -73,15 +82,13 @@ async function sendMessage() {
 
     const data = await response.json();
     
-    // Извлекаем текст ответа из структуры ответа DeepSeek/OpenAI
+    // Извлекаем текст ответа
     const aiResponse = data.choices[0].message.content;
 
-    // 5. Скрываем индикатор и добавляем ответ
     typingIndicator.style.display = 'none';
-    addMessage('ai', aiResponse, 'AIChat');
+    addMessage('ai', aiResponse, 'chat-ai');
 
   } catch (error) {
-    // Обработка ошибок (например, если Worker не настроен)
     typingIndicator.style.display = 'none';
     addMessage('ai', `Произошла ошибка: ${error.message}. Проверьте настройки прокси.`, 'System');
     console.error(error);
@@ -97,10 +104,8 @@ function addMessage(sender, text, senderName) {
   const isAI = sender === 'ai';
   const isSystem = senderName === 'System';
 
-  // Форматируем текст (заменяем переносы строк на <br>)
   const formattedText = text.replace(/\n/g, '<br>');
 
-  // Для AI-сообщений добавляем кнопки копирования и скачивания
   let actionButtonsHtml = '';
   if (isAI && !isSystem) {
     actionButtonsHtml = `
@@ -129,7 +134,6 @@ function addMessage(sender, text, senderName) {
     </div>
   `;
 
-  // Привязываем события к кнопкам (если это AI-сообщение)
   if (isAI && !isSystem) {
     const copyBtn = messageDiv.querySelector('.copy-btn');
     const docxBtn = messageDiv.querySelector('.docx-btn');
@@ -143,7 +147,7 @@ function addMessage(sender, text, senderName) {
 }
 
 // ==========================================
-// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (Копирование и DOCX)
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 // ==========================================
 async function copyToClipboard(text) {
   try {
@@ -161,7 +165,6 @@ function downloadAsDocx(text) {
     return;
   }
 
-  // Формируем простой HTML для документа
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -177,7 +180,7 @@ function downloadAsDocx(text) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `AIChat_Response_${Date.now()}.docx`;
+    a.download = `chat-ai_Response_${Date.now()}.docx`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -198,12 +201,8 @@ function getCurrentTime() {
   return `${hours}:${minutes} ${ampm}`;
 }
 
-// Обработчик кнопки "New Chat" (очистка чата)
 document.querySelector('.new-chat-btn').addEventListener('click', function() {
-  // Очищаем контейнер сообщений, оставляя только индикатор
   const messages = messagesContainer.querySelectorAll('.message');
   messages.forEach(msg => msg.remove());
-  
-  // Сбрасываем заголовок
   document.querySelector('.chat-title').textContent = "New Chat";
 });
