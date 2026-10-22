@@ -35,7 +35,6 @@ const sidebar = document.getElementById('sidebar');
 const openSidebarBtn = document.getElementById('openSidebarBtn');
 const closeSidebarBtn = document.getElementById('closeSidebarBtn');
 const newChatBtn = document.getElementById('newChatBtn');
-const chatHistory = document.getElementById('chatHistory');
 
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
@@ -60,7 +59,6 @@ updateModelList();
 // ==========================================
 // СОХРАНЕНИЕ ВВЕДЕННОГО ТЕКСТА (LocalStorage)
 // ==========================================
-// При загрузке страницы восстанавливаем текст
 const savedInput = localStorage.getItem('draftMessage');
 if (savedInput) {
   messageInput.value = savedInput;
@@ -74,7 +72,6 @@ messageInput.addEventListener('input', function() {
   this.style.height = (this.scrollHeight) + 'px';
   sendButton.disabled = this.value.trim() === '';
   
-  // Сохраняем текст при каждом вводе
   localStorage.setItem('draftMessage', this.value);
 });
 
@@ -100,22 +97,8 @@ closeSidebarBtn.addEventListener('click', () => {
   sidebar.classList.add('hidden');
 });
 
-// Обработка кнопки "New Chat"
 newChatBtn.addEventListener('click', () => {
-  messagesContainer.innerHTML = `
-    <div class="welcome-screen" id="welcomeScreen">
-      <div class="welcome-icon"><i class="fas fa-robot"></i></div>
-      <h1>Здравствуйте!</h1>
-      <p>Чем я могу вам помочь?</p>
-    </div>
-    <div class="typing-indicator" id="typingIndicator">
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
-    </div>
-  `;
-  // Обновляем ссылки на элементы после очистки
-  window.location.reload(); // Самый простой способ сбросить состояние (можно доработать позже)
+  window.location.reload();
 });
 
 // ==========================================
@@ -125,15 +108,15 @@ async function sendMessage() {
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
-  // Убираем приветствие при первом сообщении
   if (welcomeScreen) {
     welcomeScreen.style.display = 'none';
   }
 
+  // Передаем 'user' как класс
   addMessage('user', messageText, 'Вы');
 
   messageInput.value = '';
-  localStorage.removeItem('draftMessage'); // Очищаем черновик
+  localStorage.removeItem('draftMessage');
   messageInput.style.height = 'auto';
   sendButton.disabled = true;
 
@@ -171,11 +154,11 @@ async function sendMessage() {
     }
 
     typingIndicator.style.display = 'none';
+    // Передаем 'ai' как класс
     addMessage('ai', aiResponse, 'chat-ai');
 
   } catch (error) {
     typingIndicator.style.display = 'none';
-    // Изменили System на chat-ai
     addMessage('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
     console.error(error);
   }
@@ -186,7 +169,9 @@ async function sendMessage() {
 // ==========================================
 function addMessage(sender, text, senderName) {
   const messageDiv = document.createElement('div');
-  messageDiv.className = 'message';
+  // ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ: добавляем класс sender ('user' или 'ai')
+  messageDiv.className = `message ${sender}`;
+  
   const isAI = sender === 'ai';
 
   const formattedText = text.replace(/\n/g, '<br>');
@@ -205,14 +190,13 @@ function addMessage(sender, text, senderName) {
     `;
   }
 
-  // Убрали аватар для пользователя, оставили только имя и текст
   messageDiv.innerHTML = `
     <div class="message-header">
       <div class="sender-name">${senderName}</div>
       <div class="message-time">${getCurrentTime()}</div>
     </div>
     <div class="message-body">
-      <div class="message-text ${isAI ? 'ai-message' : 'user-message'}">
+      <div class="message-text">
         ${formattedText}
       </div>
       ${actionButtonsHtml}
@@ -280,7 +264,6 @@ function getCurrentTime() {
   const now = new Date();
   let hours = now.getHours();
   const minutes = now.getMinutes().toString().padStart(2, '0');
-  // Вернули AM/PM для совместимости с оригинальным дизайном
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours = hours % 12;
   hours = hours ? hours : 12;
