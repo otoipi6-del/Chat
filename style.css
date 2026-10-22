@@ -10,8 +10,8 @@
   --bg-color: #ffffff;
   --sidebar-bg: #f9fafb;
   --border-color: #e5e7eb;
-  --chat-bg: #f3f4f6; /* Светло-серый фон для контраста */
-  --user-message-bg: #ffffff; /* Белый фон для сообщений пользователя */
+  --chat-bg: #f3f4f6; 
+  --user-message-bg: #ffffff; 
   --ai-message-bg: transparent; 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -152,7 +152,7 @@ body {
   flex-direction: column;
   height: 100vh;
   min-width: 0;
-  background-color: var(--chat-bg); /* Серый фон для контраста */
+  background-color: var(--chat-bg);
 }
 
 /* Шапка */
@@ -162,7 +162,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--chat-bg); /* Шапка тоже серая */
+  background-color: var(--chat-bg);
   flex-shrink: 0;
 }
 
@@ -271,7 +271,7 @@ body {
   width: 100%;
 }
 
-/* Сообщение пользователя (справа, на белом фоне) */
+/* Сообщение пользователя */
 .message.user {
   align-items: flex-end;
 }
@@ -286,15 +286,15 @@ body {
 }
 
 .message.user .message-text {
-  background-color: var(--user-message-bg); /* Белый фон */
+  background-color: var(--user-message-bg);
   padding: 12px 16px;
   border-radius: 16px;
   border-bottom-right-radius: 4px;
   color: var(--text-primary);
-  box-shadow: var(--shadow-sm); /* Тень для объема */
+  box-shadow: var(--shadow-sm);
 }
 
-/* Сообщение AI (слева, без фона) */
+/* Сообщение AI */
 .message.ai {
   align-items: flex-start;
 }
@@ -323,14 +323,15 @@ body {
   width: 100%;
 }
 
+/* ЖИРНЫЙ шрифт для имен */
 .sender-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-secondary);
+  font-weight: 700; 
+  font-size: 15px; 
+  color: var(--text-primary); /* Сделали темнее для контраста */
 }
 
 .message-time {
-  font-size: 12px;
+  font-size: 13px;
   color: #9ca3af;
 }
 
@@ -339,10 +340,11 @@ body {
   flex-direction: column;
 }
 
+/* УВЕЛИЧЕННЫЙ шрифт текста */
 .message-text {
-  line-height: 1.6;
+  line-height: 1.65;
   word-wrap: break-word;
-  font-size: 15px;
+  font-size: 16px; 
 }
 
 .message-actions {
@@ -351,23 +353,26 @@ body {
   margin-top: 8px;
 }
 
+/* КНОПКИ С РАМКАМИ */
 .action-btn {
-  background: none;
-  border: none;
-  padding: 4px 8px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color); /* Рамка */
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
 .action-btn:hover {
-  background-color: #e5e7eb;
+  background-color: #f3f4f6;
   color: var(--text-primary);
+  border-color: #d1d5db;
 }
 
 /* Индикатор набора */
@@ -400,34 +405,37 @@ body {
    ========================================== */
 .input-container {
   padding: 16px 24px 24px;
-  background-color: var(--chat-bg); /* Фон как у всего чата */
+  background-color: var(--chat-bg);
   display: flex;
   justify-content: center;
   flex-shrink: 0;
 }
 
+/* БОЛЕЕ ЗАМЕТНАЯ РАМКА ВВОДА */
 .input-box {
   position: relative;
   width: 100%;
   max-width: 768px;
   display: flex;
   align-items: flex-end;
-  border: 1px solid var(--border-color);
+  border: 2px solid #d1d5db; /* Толще и темнее */
   border-radius: 24px;
   padding: 8px 12px;
-  background-color: var(--bg-color); /* Белое поле ввода */
-  box-shadow: var(--shadow-md);
+  background-color: var(--bg-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Усиленная тень */
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-box:focus-within {
   border-color: var(--primary);
+  box-shadow: 0 4px 16px rgba(45, 109, 246, 0.15);
 }
 
 .input-icon-btn {
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: 18px;
+  font-size: 20px; /* Чуть больше иконки */
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -446,7 +454,7 @@ body {
   flex: 1;
   border: none;
   padding: 8px;
-  font-size: 15px;
+  font-size: 16px; /* Увеличенный шрифт в поле */
   resize: none;
   min-height: 24px;
   max-height: 200px;
@@ -461,8 +469,8 @@ body {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px; /* Чуть больше */
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
