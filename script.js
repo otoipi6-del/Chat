@@ -15,9 +15,10 @@ const PROVIDER_MODELS = {
     'deepseek-reasoner'
   ],
   openrouter: [
-    'openrouter/free',
-    'deepseek/deepseek-r1:free',
-    'meta-llama/llama-3.2-3b-instruct:free'
+    'nvidia/nemotron-3-super-120b-a12b:free', // Отличный баланс, 120B параметров [citation:5]
+    'google/gemma-4-31b-it:free',            // Мощная модель от Google, контекст 256K [citation:9]
+    'nvidia/nemotron-3.5-super-vl:free',     // Из твоего списка, хороший вариант
+    'openrouter/free'                        // Автоматический выбор лучшей бесплатной модели [citation:2][citation:5]
   ]
 };
 
@@ -34,15 +35,12 @@ const modelSelect = document.getElementById('modelSelect');
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
 // ==========================================
-// Функция обновления списка моделей при смене провайдера
 function updateModelList() {
   const provider = providerSelect.value;
   const models = PROVIDER_MODELS[provider] || [];
   
-  // Очищаем текущий список
   modelSelect.innerHTML = '';
   
-  // Заполняем новыми моделями
   models.forEach(model => {
     const option = document.createElement('option');
     option.value = model;
@@ -51,11 +49,8 @@ function updateModelList() {
   });
 }
 
-// Слушатель изменения провайдера
 providerSelect.addEventListener('change', updateModelList);
-
-// Инициализация списка моделей при загрузке страницы (по умолчанию Groq)
-updateModelList();
+updateModelList(); // Инициализация при загрузке
 
 // ==========================================
 // ОБРАБОТЧИКИ ВВОДА
@@ -94,7 +89,6 @@ async function sendMessage() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    // Получаем выбранные значения из списков
     const selectedProvider = providerSelect.value;
     const selectedModel = modelSelect.value;
 
@@ -104,8 +98,8 @@ async function sendMessage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        provider: selectedProvider, // передаем выбранного провайдера
-        model: selectedModel,       // передаем выбранную модель
+        provider: selectedProvider,
+        model: selectedModel,
         messages: [{ role: "user", content: messageText }],
         stream: false
       }),
