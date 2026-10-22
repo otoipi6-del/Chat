@@ -35,7 +35,7 @@ body {
 }
 
 /* ==========================================
-   САЙДБАР
+   САЙДБАР (Левая панель)
    ========================================== */
 .sidebar {
   width: var(--sidebar-width);
@@ -44,14 +44,10 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  transition: transform 0.3s ease;
-  z-index: 100;
+  z-index: 1000;
   flex-shrink: 0;
-}
-
-.sidebar.hidden {
-  transform: translateX(-100%);
-  position: absolute;
+  /* Плавное появление на мобильных */
+  transition: transform 0.3s ease-in-out;
 }
 
 .sidebar-header {
@@ -153,7 +149,7 @@ body {
   height: 100vh;
   min-width: 0;
   background-color: var(--chat-bg);
-  position: relative; /* Чтобы шапка не уезжала */
+  position: relative;
 }
 
 /* Шапка */
@@ -164,8 +160,8 @@ body {
   align-items: center;
   justify-content: space-between;
   background-color: var(--chat-bg);
-  flex-shrink: 0; /* Шапка не сжимается */
-  z-index: 10; /* Шапка поверх сообщений */
+  flex-shrink: 0;
+  z-index: 10;
   width: 100%;
   gap: 12px;
 }
@@ -174,8 +170,8 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 1; /* Разрешаем сжиматься */
-  min-width: 0; /* Важно для сжатия */
+  flex-shrink: 1; 
+  min-width: 0; 
 }
 
 .hamburger-btn {
@@ -193,7 +189,6 @@ body {
   background-color: #e5e7eb;
 }
 
-/* Заголовок, который обрезается троеточием, если не влезает */
 .chat-title {
   font-weight: 700; 
   font-size: 20px;  
@@ -208,7 +203,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0; /* Правую часть не сжимаем */
+  flex-shrink: 0;
 }
 
 .provider-select {
@@ -238,7 +233,7 @@ body {
   display: flex;
   flex-direction: column;
   overscroll-behavior-y: contain; 
-  padding-bottom: 80px; /* Отступ снизу */
+  padding-bottom: 80px; 
 }
 
 .message-wrapper {
@@ -328,7 +323,6 @@ body {
   color: var(--text-primary);
 }
 
-/* Общие стили */
 .message-header {
   display: flex;
   align-items: center;
@@ -386,7 +380,6 @@ body {
   border-color: #d1d5db;
 }
 
-/* Индикатор набора */
 .typing-indicator {
   display: none;
   gap: 4px;
@@ -423,11 +416,10 @@ body {
   width: 100%;
 }
 
-/* Жесткая привязка к ширине карточки */
 .input-box {
   position: relative;
   width: 100%;
-  max-width: 768px; /* Одинаковая ширина с .message-wrapper */
+  max-width: 768px; 
   display: flex;
   align-items: flex-end;
   border: 2px solid #d1d5db;
@@ -507,10 +499,19 @@ body {
    АДАПТИВНОСТЬ (Мобильные устройства)
    ========================================== */
 @media (max-width: 768px) {
+  /* На телефоне сайдбар становится "шторкой" поверх экрана */
   .sidebar {
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
     height: 100vh;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+    transform: translateX(0); /* По умолчанию открыт, если нет класса hidden */
+  }
+
+  /* Когда на сайдбаре класс hidden, он уезжает влево */
+  .sidebar.hidden {
+    transform: translateX(-100%);
   }
 
   .chat-header {
@@ -522,9 +523,8 @@ body {
     gap: 6px;
   }
 
-  /* На мобильных делаем селекты маленькими */
   .provider-select {
-    max-width: 80px; /* Еще уже */
+    max-width: 80px; 
     font-size: 11px;
     padding: 4px;
   }
@@ -559,7 +559,6 @@ body {
     font-size: 15px;
   }
 
-  /* Убираем лишние отступы у имен, чтобы прижать к тексту */
   .message-header {
     margin-bottom: 0px; 
   }
@@ -572,7 +571,6 @@ body {
     font-size: 17px;
   }
 
-  /* Гарантируем 100% ширину для поля ввода на мобильных */
   .input-box {
     max-width: 100%;
   }
