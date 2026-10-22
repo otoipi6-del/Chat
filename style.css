@@ -323,11 +323,10 @@ body {
   width: 100%;
 }
 
-/* ЖИРНЫЙ шрифт для имен */
 .sender-name {
   font-weight: 700; 
   font-size: 15px; 
-  color: var(--text-primary); /* Сделали темнее для контраста */
+  color: var(--text-primary);
 }
 
 .message-time {
@@ -340,7 +339,6 @@ body {
   flex-direction: column;
 }
 
-/* УВЕЛИЧЕННЫЙ шрифт текста */
 .message-text {
   line-height: 1.65;
   word-wrap: break-word;
@@ -353,10 +351,9 @@ body {
   margin-top: 8px;
 }
 
-/* КНОПКИ С РАМКАМИ */
 .action-btn {
   background: var(--bg-color);
-  border: 1px solid var(--border-color); /* Рамка */
+  border: 1px solid var(--border-color);
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -411,18 +408,17 @@ body {
   flex-shrink: 0;
 }
 
-/* БОЛЕЕ ЗАМЕТНАЯ РАМКА ВВОДА */
 .input-box {
   position: relative;
   width: 100%;
   max-width: 768px;
   display: flex;
   align-items: flex-end;
-  border: 2px solid #d1d5db; /* Толще и темнее */
+  border: 2px solid #d1d5db;
   border-radius: 24px;
   padding: 8px 12px;
   background-color: var(--bg-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Усиленная тень */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -435,7 +431,7 @@ body {
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: 20px; /* Чуть больше иконки */
+  font-size: 20px;
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -454,7 +450,7 @@ body {
   flex: 1;
   border: none;
   padding: 8px;
-  font-size: 16px; /* Увеличенный шрифт в поле */
+  font-size: 16px;
   resize: none;
   min-height: 24px;
   max-height: 200px;
@@ -469,7 +465,7 @@ body {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 36px; /* Чуть больше */
+  width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
@@ -492,7 +488,7 @@ body {
 }
 
 /* ==========================================
-   АДАПТИВНОСТЬ
+   АДАПТИВНОСТЬ (Мобильные устройства)
    ========================================== */
 @media (max-width: 768px) {
   .sidebar {
@@ -525,5 +521,26 @@ body {
   
   .message.user .message-body {
     max-width: 90%;
+  }
+
+  /* УВЕЛИЧИВАЕМ ШРИФТ ДЛЯ МОБИЛЬНЫХ */
+  .message-text {
+    font-size: 17px; /* Крупнее для чтения */
+  }
+
+  .message-input {
+    font-size: 17px; /* Предотвращает автоматический зум на iOS */
+  }
+
+  .sender-name {
+    font-size: 16px;
+  }
+
+  .welcome-screen h1 {
+    font-size: 24px;
+  }
+
+  .welcome-screen p {
+    font-size: 17px;
   }
 }
