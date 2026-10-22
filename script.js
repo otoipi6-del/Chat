@@ -3,7 +3,6 @@
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
 
-// Список моделей для каждого провайдера
 const PROVIDER_MODELS = {
   groq: [
     'llama-3.1-8b-instant',
@@ -31,6 +30,12 @@ const messagesContainer = document.getElementById('messagesContainer');
 const typingIndicator = document.getElementById('typingIndicator');
 const providerSelect = document.getElementById('providerSelect');
 const modelSelect = document.getElementById('modelSelect');
+const welcomeScreen = document.getElementById('welcomeScreen');
+const sidebar = document.getElementById('sidebar');
+const openSidebarBtn = document.getElementById('openSidebarBtn');
+const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+const newChatBtn = document.getElementById('newChatBtn');
+const chatHistory = document.getElementById('chatHistory');
 
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
@@ -49,21 +54,28 @@ function updateModelList() {
   });
 }
 
-// Слушатель изменения провайдера
 providerSelect.addEventListener('change', updateModelList);
+updateModelList();
 
 // ==========================================
-// ИНИЦИАЛИЗАЦИЯ (вызов сразу после загрузки скрипта)
+// СОХРАНЕНИЕ ВВЕДЕННОГО ТЕКСТА (LocalStorage)
 // ==========================================
-updateModelList(); 
+// При загрузке страницы восстанавливаем текст
+const savedInput = localStorage.getItem('draftMessage');
+if (savedInput) {
+  messageInput.value = savedInput;
+  messageInput.style.height = 'auto';
+  messageInput.style.height = (messageInput.scrollHeight) + 'px';
+  sendButton.disabled = savedInput.trim() === '';
+}
 
-// ==========================================
-// ОБРАБОТЧИКИ ВВОДА
-// ==========================================
 messageInput.addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = (this.scrollHeight) + 'px';
   sendButton.disabled = this.value.trim() === '';
+  
+  // Сохраняем текст при каждом вводе
+  localStorage.setItem('draftMessage', this.value);
 });
 
 messageInput.addEventListener('keydown', function(e) {
@@ -78,15 +90,50 @@ messageInput.addEventListener('keydown', function(e) {
 sendButton.addEventListener('click', sendMessage);
 
 // ==========================================
+// БОКОВАЯ ПАНЕЛЬ (Сайдбар)
+// ==========================================
+openSidebarBtn.addEventListener('click', () => {
+  sidebar.classList.remove('hidden');
+});
+
+closeSidebarBtn.addEventListener('click', () => {
+  sidebar.classList.add('hidden');
+});
+
+// Обработка кнопки "New Chat"
+newChatBtn.addEventListener('click', () => {
+  messagesContainer.innerHTML = `
+    <div class="welcome-screen" id="welcomeScreen">
+      <div class="welcome-icon"><i class="fas fa-robot"></i></div>
+      <h1>Здравствуйте!</h1>
+      <p>Чем я могу вам помочь?</p>
+    </div>
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  `;
+  // Обновляем ссылки на элементы после очистки
+  window.location.reload(); // Самый простой способ сбросить состояние (можно доработать позже)
+});
+
+// ==========================================
 // ОСНОВНАЯ ЛОГИКА ЧАТА
 // ==========================================
 async function sendMessage() {
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
-  addMessage('user', messageText, 'You');
+  // Убираем приветствие при первом сообщении
+  if (welcomeScreen) {
+    welcomeScreen.style.display = 'none';
+  }
+
+  addMessage('user', messageText, 'Вы');
 
   messageInput.value = '';
+  localStorage.removeItem('draftMessage'); // Очищаем черновик
   messageInput.style.height = 'auto';
   sendButton.disabled = true;
 
@@ -128,7 +175,8 @@ async function sendMessage() {
 
   } catch (error) {
     typingIndicator.style.display = 'none';
-    addMessage('ai', `Произошла ошибка: ${error.message}. Проверьте настройки прокси.`, 'System');
+    // Изменили System на chat-ai
+    addMessage('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
     console.error(error);
   }
 }
@@ -140,31 +188,30 @@ function addMessage(sender, text, senderName) {
   const messageDiv = document.createElement('div');
   messageDiv.className = 'message';
   const isAI = sender === 'ai';
-  const isSystem = senderName === 'System';
 
   const formattedText = text.replace(/\n/g, '<br>');
 
   let actionButtonsHtml = '';
-  if (isAI && !isSystem) {
+  if (isAI) {
     actionButtonsHtml = `
-      <div class="message-actions" style="margin-top: 10px; display: flex; gap: 10px;">
-        <button class="action-btn copy-btn" title="Копировать" style="background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+      <div class="message-actions">
+        <button class="action-btn copy-btn" title="Копировать">
           <i class="fas fa-copy"></i> Копировать
         </button>
-        <button class="action-btn docx-btn" title="Скачать DOCX" style="background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+        <button class="action-btn docx-btn" title="Скачать DOCX">
           <i class="fas fa-file-word"></i> Скачать DOCX
         </button>
       </div>
     `;
   }
 
+  // Убрали аватар для пользователя, оставили только имя и текст
   messageDiv.innerHTML = `
-    <div class="avatar ${isAI ? 'ai-avatar' : 'user-avatar'}">${isAI ? '<i class="fas fa-robot"></i>' : 'JD'}</div>
-    <div class="message-content">
-      <div class="message-header">
-        <div class="sender-name">${senderName}</div>
-        <div class="message-time">${getCurrentTime()}</div>
-      </div>
+    <div class="message-header">
+      <div class="sender-name">${senderName}</div>
+      <div class="message-time">${getCurrentTime()}</div>
+    </div>
+    <div class="message-body">
       <div class="message-text ${isAI ? 'ai-message' : 'user-message'}">
         ${formattedText}
       </div>
@@ -172,7 +219,7 @@ function addMessage(sender, text, senderName) {
     </div>
   `;
 
-  if (isAI && !isSystem) {
+  if (isAI) {
     const copyBtn = messageDiv.querySelector('.copy-btn');
     const docxBtn = messageDiv.querySelector('.docx-btn');
 
@@ -233,14 +280,9 @@ function getCurrentTime() {
   const now = new Date();
   let hours = now.getHours();
   const minutes = now.getMinutes().toString().padStart(2, '0');
+  // Вернули AM/PM для совместимости с оригинальным дизайном
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours = hours % 12;
   hours = hours ? hours : 12;
   return `${hours}:${minutes} ${ampm}`;
 }
-
-document.querySelector('.new-chat-btn').addEventListener('click', function() {
-  const messages = messagesContainer.querySelectorAll('.message');
-  messages.forEach(msg => msg.remove());
-  document.querySelector('.chat-title').textContent = "New Chat";
-});
