@@ -53,11 +53,13 @@ function updateModelList() {
   });
 }
 
+// Устанавливаем OpenRouter по умолчанию
+providerSelect.value = "openrouter";
 providerSelect.addEventListener('change', updateModelList);
 updateModelList();
 
 // ==========================================
-// СОХРАНЕНИЕ ВВЕДЕННОГО ТЕКСТА (LocalStorage)
+// СОХРАНЕНИЕ ВВЕДЕННОГО ТЕКСТА
 // ==========================================
 const savedInput = localStorage.getItem('draftMessage');
 if (savedInput) {
@@ -87,7 +89,7 @@ messageInput.addEventListener('keydown', function(e) {
 sendButton.addEventListener('click', sendMessage);
 
 // ==========================================
-// БОКОВАЯ ПАНЕЛЬ (Сайдбар)
+// БОКОВАЯ ПАНЕЛЬ
 // ==========================================
 openSidebarBtn.addEventListener('click', () => {
   sidebar.classList.remove('hidden');
@@ -112,7 +114,6 @@ async function sendMessage() {
     welcomeScreen.style.display = 'none';
   }
 
-  // Передаем 'user' как класс
   addMessage('user', messageText, 'Вы');
 
   messageInput.value = '';
@@ -154,7 +155,6 @@ async function sendMessage() {
     }
 
     typingIndicator.style.display = 'none';
-    // Передаем 'ai' как класс
     addMessage('ai', aiResponse, 'chat-ai');
 
   } catch (error) {
@@ -168,8 +168,10 @@ async function sendMessage() {
 // ФУНКЦИИ ОТОБРАЖЕНИЯ
 // ==========================================
 function addMessage(sender, text, senderName) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'message-wrapper';
+
   const messageDiv = document.createElement('div');
-  // ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ: добавляем класс sender ('user' или 'ai')
   messageDiv.className = `message ${sender}`;
   
   const isAI = sender === 'ai';
@@ -211,7 +213,8 @@ function addMessage(sender, text, senderName) {
     docxBtn.addEventListener('click', () => downloadAsDocx(text));
   }
 
-  messagesContainer.insertBefore(messageDiv, typingIndicator);
+  wrapper.appendChild(messageDiv);
+  messagesContainer.insertBefore(wrapper, typingIndicator);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
@@ -260,12 +263,10 @@ function downloadAsDocx(text) {
   }
 }
 
+// Измененный формат времени на 24-часовой
 function getCurrentTime() {
   const now = new Date();
-  let hours = now.getHours();
+  const hours = now.getHours().toString().padStart(2, '0');
   const minutes = now.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  return `${hours}:${minutes} ${ampm}`;
+  return `${hours}:${minutes}`;
 }
