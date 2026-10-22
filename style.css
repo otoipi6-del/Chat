@@ -170,6 +170,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0; /* Запрещаем сжимать название */
 }
 
 .hamburger-btn {
@@ -186,27 +187,33 @@ body {
   background-color: #e5e7eb;
 }
 
+/* Убираем перенос названия */
 .chat-title {
   font-weight: 600;
   font-size: 16px;
+  white-space: nowrap; 
 }
 
 .chat-header-right {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 1;
+  overflow: hidden; /* Скрываем лишнее, если не влезает */
 }
 
+/* УМЕНЬШЕННЫЕ ЯЧЕЙКИ МОДЕЛЕЙ */
 .provider-select {
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px; /* Чуть меньше шрифт */
   cursor: pointer;
   outline: none;
-  max-width: 200px;
+  max-width: 130px; /* Ограничиваем ширину */
+  text-overflow: ellipsis;
 }
 
 .provider-select:focus {
@@ -271,7 +278,6 @@ body {
   width: 100%;
 }
 
-/* Сообщение пользователя */
 .message.user {
   align-items: flex-end;
 }
@@ -294,7 +300,6 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-/* Сообщение AI */
 .message.ai {
   align-items: flex-start;
 }
@@ -319,7 +324,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 2px; /* УМЕНЬШИЛИ ОТСТУП, чтобы приблизить к тексту */
   width: 100%;
 }
 
@@ -498,17 +503,18 @@ body {
   }
 
   .chat-header {
-    padding: 12px 16px;
+    padding: 12px;
   }
 
   .chat-header-right {
-    gap: 8px;
+    gap: 6px;
   }
 
+  /* На мобильных делаем селекты еще меньше */
   .provider-select {
-    max-width: 100px;
+    max-width: 90px;
     font-size: 12px;
-    padding: 4px 8px;
+    padding: 4px 6px;
   }
 
   .messages-container {
@@ -523,17 +529,22 @@ body {
     max-width: 90%;
   }
 
-  /* УВЕЛИЧИВАЕМ ШРИФТ ДЛЯ МОБИЛЬНЫХ */
+  /* СИЛЬНО УВЕЛИЧИВАЕМ ШРИФТ ДЛЯ МОБИЛЬНЫХ */
   .message-text {
-    font-size: 17px; /* Крупнее для чтения */
+    font-size: 18px; /* Еще крупнее */
   }
 
   .message-input {
-    font-size: 17px; /* Предотвращает автоматический зум на iOS */
+    font-size: 18px; 
   }
 
   .sender-name {
     font-size: 16px;
+  }
+
+  /* Убираем лишние отступы у имен */
+  .message-header {
+    margin-bottom: 2px;
   }
 
   .welcome-screen h1 {
