@@ -153,6 +153,7 @@ body {
   height: 100vh;
   min-width: 0;
   background-color: var(--chat-bg);
+  position: relative; /* Чтобы шапка не уезжала */
 }
 
 /* Шапка */
@@ -163,15 +164,17 @@ body {
   align-items: center;
   justify-content: space-between;
   background-color: var(--chat-bg);
-  flex-shrink: 0;
-  gap: 16px; /* Отступ между левой и правой частью */
+  flex-shrink: 0; /* Шапка не сжимается */
+  z-index: 10; /* Шапка поверх сообщений */
+  width: 100%;
+  gap: 16px;
 }
 
 .chat-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0; /* Запрещаем сжимать левую часть */
+  flex-shrink: 0; 
 }
 
 .hamburger-btn {
@@ -188,10 +191,9 @@ body {
   background-color: #e5e7eb;
 }
 
-/* УВЕЛИЧЕННЫЙ шрифт названия */
 .chat-title {
-  font-weight: 700; /* Жирнее */
-  font-size: 20px;  /* Крупнее */
+  font-weight: 700; 
+  font-size: 20px;  
   white-space: nowrap; 
   color: var(--text-primary);
 }
@@ -200,11 +202,10 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 1; /* Разрешаем сжиматься */
-  min-width: 0; /* Важно для сжатия */
+  flex-shrink: 1;
+  min-width: 0;
 }
 
-/* ЯЧЕЙКИ МОДЕЛЕЙ (теперь могут сжиматься) */
 .provider-select {
   padding: 6px 8px;
   border-radius: 8px;
@@ -214,8 +215,8 @@ body {
   font-size: 13px;
   cursor: pointer;
   outline: none;
-  min-width: 80px; /* Минимальная ширина */
-  max-width: 150px; /* Максимальная ширина */
+  min-width: 80px;
+  max-width: 150px;
   text-overflow: ellipsis;
 }
 
@@ -233,11 +234,12 @@ body {
   display: flex;
   flex-direction: column;
   overscroll-behavior-y: contain; 
+  padding-bottom: 100px; /* Отступ снизу, чтобы последнее сообщение не перекрывалось полем ввода */
 }
 
 .message-wrapper {
   width: 100%;
-  max-width: 768px; /* Ширина карточки */
+  max-width: 768px; 
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -414,14 +416,13 @@ body {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
-  width: 100%; /* Растягиваем контейнер на всю ширину */
+  width: 100%;
 }
 
-/* ВЫРАВНИВАЕМ ШИРИНУ ПОЛЯ ВВОДА С КАРТОЧКОЙ */
 .input-box {
   position: relative;
   width: 100%;
-  max-width: 768px; /* Такая же ширина, как у карточки */
+  max-width: 768px;
   display: flex;
   align-items: flex-end;
   border: 2px solid #d1d5db;
@@ -508,7 +509,7 @@ body {
   }
 
   .chat-header {
-    padding: 12px;
+    padding: 8px 12px; /* Меньше отступы */
     gap: 8px;
   }
 
@@ -516,43 +517,53 @@ body {
     gap: 6px;
   }
 
-  /* Еще сильнее сжимаем селекты на мобильных */
   .provider-select {
-    max-width: 100px;
-    font-size: 12px;
-    padding: 4px 6px;
-    min-width: 60px;
+    max-width: 90px;
+    font-size: 11px;
+    padding: 4px 4px;
+    min-width: 50px;
   }
 
   .chat-title {
-    font-size: 18px; /* Чуть меньше на мобильных, чтобы влезло */
+    font-size: 16px; /* Чуть меньше, чтобы влезло в одну строку */
+    font-weight: 700;
   }
 
   .messages-container {
-    padding: 16px;
+    padding: 12px;
+    padding-bottom: 90px; /* Отступ для поля ввода */
   }
 
   .input-container {
-    padding: 12px 16px 20px;
+    padding: 10px 12px 16px;
   }
   
   .message.user .message-body {
-    max-width: 90%;
+    max-width: 95%;
   }
 
   .message-text {
-    font-size: 18px;
+    font-size: 17px; /* Увеличенный шрифт */
   }
 
   .message-input {
-    font-size: 18px; 
+    font-size: 17px; 
   }
 
   .sender-name {
-    font-size: 16px;
+    font-size: 15px;
   }
 
+  /* Убираем лишние отступы у имен */
   .message-header {
-    margin-bottom: 2px;
+    margin-bottom: 0px; 
+  }
+
+  .welcome-screen h1 {
+    font-size: 24px;
+  }
+
+  .welcome-screen p {
+    font-size: 17px;
   }
 }
