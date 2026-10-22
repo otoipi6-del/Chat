@@ -35,6 +35,7 @@ const sidebar = document.getElementById('sidebar');
 const openSidebarBtn = document.getElementById('openSidebarBtn');
 const closeSidebarBtn = document.getElementById('closeSidebarBtn');
 const newChatBtn = document.getElementById('newChatBtn');
+const chatHistoryContainer = document.getElementById('chatHistory');
 
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
@@ -57,6 +58,104 @@ function updateModelList() {
 providerSelect.value = "openrouter";
 providerSelect.addEventListener('change', updateModelList);
 updateModelList();
+
+// ==========================================
+// УПРАВЛЕНИЕ ИСТОРИЕЙ ЧАТОВ
+// ==========================================
+let currentChatId = null;
+let chats = JSON.parse(localStorage.getItem('chat_history')) || [];
+
+function renderChatHistory() {
+  chatHistoryContainer.innerHTML = '';
+  
+  chats.forEach(chat => {
+    const wrapper = document.createElement('div');
+    wrapper.className = `chat-item-wrapper ${chat.id === currentChatId ? 'active' : ''}`;
+    wrapper.dataset.id = chat.id;
+    
+    wrapper.innerHTML = `
+      <span class="chat-item-text">${chat.title || 'Новый чат'}</span>
+      <button class="chat-item-menu"><i class="fas fa-ellipsis-h"></i></button>
+    `;
+    
+    // Клик по чату для загрузки
+    wrapper.addEventListener('click', (e) => {
+      if (e.target.closest('.chat-item-menu')) return; // Игнорируем клик по меню
+      loadChat(chat.id);
+    });
+
+    chatHistoryContainer.appendChild(wrapper);
+  });
+}
+
+function createNewChat() {
+  const newChat = {
+    id: Date.now().toString(),
+    title: 'Новый чат',
+    messages: []
+  };
+  chats.unshift(newChat);
+  saveChats();
+  currentChatId = newChat.id;
+  renderChatHistory();
+  clearMessages();
+  
+  // Обновляем заголовок
+  document.querySelector('.chat-title').textContent = 'chat-ai';
+}
+
+function loadChat(id) {
+  const chat = chats.find(c => c.id === id);
+  if (!chat) return;
+  
+  currentChatId = id;
+  renderChatHistory();
+  clearMessages();
+  
+  // Обновляем заголовок
+  document.querySelector('.chat-title').textContent = chat.title;
+  
+  // Восстанавливаем сообщения
+  chat.messages.forEach(msg => {
+    addMessageToUI(msg.sender, msg.text, msg.senderName, false);
+  });
+  
+  // Прокручиваем вниз
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function saveChats() {
+  localStorage.setItem('chat_history', JSON.stringify(chats));
+}
+
+function updateCurrentChat(sender, text, senderName) {
+  if (!currentChatId) return;
+  
+  const chat = chats.find(c => c.id === currentChatId);
+  if (chat) {
+    chat.messages.push({ sender, text, senderName });
+    
+    // Если это первое сообщение пользователя, обновляем заголовок чата
+    if (chat.messages.length === 1 && sender === 'user') {
+      chat.title = text.substring(0, 30) + (text.length > 30 ? '...' : '');
+      document.querySelector('.chat-title').textContent = chat.title;
+      renderChatHistory();
+    }
+    
+    saveChats();
+  }
+}
+
+function clearMessages() {
+  // Удаляем все сообщения, оставляя только приветствие и индикатор
+  const messages = messagesContainer.querySelectorAll('.message-wrapper');
+  messages.forEach(msg => msg.remove());
+  
+  // Показываем приветствие
+  if (welcomeScreen) {
+    welcomeScreen.style.display = 'flex';
+  }
+}
 
 // ==========================================
 // СОХРАНЕНИЕ ВВЕДЕННОГО ТЕКСТА
@@ -100,7 +199,7 @@ closeSidebarBtn.addEventListener('click', () => {
 });
 
 newChatBtn.addEventListener('click', () => {
-  window.location.reload();
+  createNewChat();
 });
 
 // ==========================================
@@ -110,11 +209,17 @@ async function sendMessage() {
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
+  // Если нет активного чата, создаем его
+  if (!currentChatId) {
+    createNewChat();
+  }
+
   if (welcomeScreen) {
     welcomeScreen.style.display = 'none';
   }
 
-  addMessage('user', messageText, 'Вы');
+  addMessageToUI('user', messageText, 'Вы');
+  updateCurrentChat('user', messageText, 'Вы');
 
   messageInput.value = '';
   localStorage.removeItem('draftMessage');
@@ -128,6 +233,13 @@ async function sendMessage() {
     const selectedProvider = providerSelect.value;
     const selectedModel = modelSelect.value;
 
+    // Получаем историю сообщений для контекста
+    const currentChat = chats.find(c => c.id === currentChatId);
+    const contextMessages = currentChat.messages.map(m => ({
+      role: m.sender === 'user' ? 'user' : 'assistant',
+      content: m.text
+    }));
+
     const response = await fetch(PROXY_URL, {
       method: 'POST',
       headers: {
@@ -136,7 +248,7 @@ async function sendMessage() {
       body: JSON.stringify({
         provider: selectedProvider,
         model: selectedModel,
-        messages: [{ role: "user", content: messageText }],
+        messages: contextMessages,
         stream: false
       }),
     });
@@ -155,11 +267,13 @@ async function sendMessage() {
     }
 
     typingIndicator.style.display = 'none';
-    addMessage('ai', aiResponse, 'chat-ai');
+    addMessageToUI('ai', aiResponse, 'chat-ai');
+    updateCurrentChat('ai', aiResponse, 'chat-ai');
 
   } catch (error) {
     typingIndicator.style.display = 'none';
-    addMessage('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
+    addMessageToUI('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
+    updateCurrentChat('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
     console.error(error);
   }
 }
@@ -167,7 +281,7 @@ async function sendMessage() {
 // ==========================================
 // ФУНКЦИИ ОТОБРАЖЕНИЯ
 // ==========================================
-function addMessage(sender, text, senderName) {
+function addMessageToUI(sender, text, senderName, scroll = true) {
   const wrapper = document.createElement('div');
   wrapper.className = 'message-wrapper';
 
@@ -215,7 +329,10 @@ function addMessage(sender, text, senderName) {
 
   wrapper.appendChild(messageDiv);
   messagesContainer.insertBefore(wrapper, typingIndicator);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  if (scroll) {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
 }
 
 // ==========================================
@@ -263,10 +380,22 @@ function downloadAsDocx(text) {
   }
 }
 
-// Измененный формат времени на 24-часовой
 function getCurrentTime() {
   const now = new Date();
   const hours = now.getHours().toString().padStart(2, '0');
   const minutes = now.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
+}
+
+// ==========================================
+// ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
+// ==========================================
+renderChatHistory();
+
+// Если есть сохраненные чаты, загружаем последний
+if (chats.length > 0) {
+  loadChat(chats[0].id);
+} else {
+  // Если чатов нет, показываем приветствие
+  clearMessages();
 }
