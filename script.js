@@ -39,10 +39,8 @@ function updateModelList() {
   const provider = providerSelect.value;
   const models = PROVIDER_MODELS[provider] || [];
   
-  // Очищаем текущий список
   modelSelect.innerHTML = '';
   
-  // Заполняем новыми моделями
   models.forEach(model => {
     const option = document.createElement('option');
     option.value = model;
@@ -54,11 +52,10 @@ function updateModelList() {
 // Слушатель изменения провайдера
 providerSelect.addEventListener('change', updateModelList);
 
-// Инициализация списка моделей при загрузке страницы
-// (вызываем после загрузки DOM, чтобы элементы точно существовали)
-window.addEventListener('DOMContentLoaded', () => {
-    updateModelList();
-});
+// ==========================================
+// ИНИЦИАЛИЗАЦИЯ (вызов сразу после загрузки скрипта)
+// ==========================================
+updateModelList(); 
 
 // ==========================================
 // ОБРАБОТЧИКИ ВВОДА
@@ -119,7 +116,6 @@ async function sendMessage() {
 
     const data = await response.json();
     
-    // Безопасное извлечение ответа
     let aiResponse = "Не удалось извлечь ответ.";
     if (data.choices && data.choices[0] && data.choices[0].message) {
         aiResponse = data.choices[0].message.content;
