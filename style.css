@@ -35,7 +35,7 @@ body {
 }
 
 /* ==========================================
-   САЙДБАР (Левая панель)
+   САЙДБАР
    ========================================== */
 .sidebar {
   width: var(--sidebar-width);
@@ -46,8 +46,13 @@ body {
   height: 100vh;
   z-index: 1000;
   flex-shrink: 0;
-  /* Плавное появление на мобильных */
   transition: transform 0.3s ease-in-out;
+}
+
+/* На ПК сайдбар скрыт по умолчанию */
+.sidebar.hidden {
+  transform: translateX(-100%);
+  position: absolute;
 }
 
 .sidebar-header {
@@ -499,17 +504,16 @@ body {
    АДАПТИВНОСТЬ (Мобильные устройства)
    ========================================== */
 @media (max-width: 768px) {
-  /* На телефоне сайдбар становится "шторкой" поверх экрана */
+  /* На телефоне сайдбар выезжает как шторка */
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
     box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-    transform: translateX(0); /* По умолчанию открыт, если нет класса hidden */
+    transform: translateX(0);
   }
 
-  /* Когда на сайдбаре класс hidden, он уезжает влево */
   .sidebar.hidden {
     transform: translateX(-100%);
   }
@@ -534,9 +538,13 @@ body {
     font-weight: 700;
   }
 
+  /* ЖЕСТКО ФИКСИРУЕМ ОБЛАСТЬ СООБЩЕНИЙ НА МОБИЛЬНЫХ */
   .messages-container {
     padding: 12px;
     padding-bottom: 90px;
+    /* На мобильных контейнер должен занимать все место под шапкой */
+    height: calc(100vh - 120px); /* Вычитаем высоту шапки и поля ввода */
+    overflow-y: auto;
   }
 
   .input-container {
