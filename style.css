@@ -52,7 +52,7 @@ body {
 }
 
 /* ==========================================
-   САЙДБАР
+   САЙДБАР (ФИКСАЦИЯ ШАПКИ И НИЗА)
    ========================================== */
 .sidebar {
   width: var(--sidebar-width);
@@ -71,12 +71,14 @@ body {
   position: absolute;
 }
 
+/* Фиксированная шапка сайдбара */
 .sidebar-header {
   padding: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0; /* Не сжимается при прокрутке */
 }
 
 .logo {
@@ -88,6 +90,7 @@ body {
   color: var(--primary);
 }
 
+/* Фиксированная кнопка New Chat */
 .new-chat-btn {
   margin: 16px;
   padding: 10px 16px;
@@ -103,14 +106,16 @@ body {
   gap: 8px;
   transition: all 0.2s;
   box-shadow: var(--shadow-sm);
+  flex-shrink: 0; /* Не сжимается при прокрутке */
 }
 
 .new-chat-btn:hover {
   background-color: var(--border-color);
 }
 
+/* Прокручиваемый список чатов */
 .chat-history {
-  flex: 1;
+  flex: 1; /* Занимает всё доступное место */
   overflow-y: auto;
   padding: 8px;
   overscroll-behavior: contain;
@@ -194,10 +199,12 @@ body {
   color: var(--text-primary);
 }
 
-/* Кнопка "Очистить историю" - СЕРАЯ */
+/* Фиксированный подвал сайдбара */
 .sidebar-footer {
   padding: 16px;
   border-top: 1px solid var(--border-color);
+  flex-shrink: 0; /* Не сжимается при прокрутке */
+  background-color: var(--sidebar-bg); /* Чтобы не просвечивало при прокрутке */
 }
 
 .clear-all-btn {
