@@ -16,7 +16,6 @@
         <i class="fas fa-robot"></i>
         <span>chat-ai</span>
       </div>
-      <!-- Крестик убран отсюда -->
     </div>
     
     <button class="new-chat-btn" id="newChatBtn">
@@ -26,6 +25,13 @@
     
     <div class="chat-history" id="chatHistory">
       <!-- История чатов будет заполняться через JS -->
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="clear-all-btn" id="clearAllBtn">
+        <i class="fas fa-trash-alt"></i>
+        <span>Очистить историю</span>
+      </button>
     </div>
   </div>
 
@@ -46,7 +52,6 @@
         <select id="modelSelect" class="provider-select">
           <!-- Заполняется через JS -->
         </select>
-        <!-- Кнопка-гамбургер (она же крестик) -->
         <button class="hamburger-btn" id="openSidebarBtn">
           <i class="fas fa-bars"></i>
         </button>
@@ -71,8 +76,12 @@
     <!-- Поле ввода -->
     <div class="input-container">
       <div class="input-box">
+        <!-- Скрытый инпут для файла -->
+        <input type="file" id="fileInput" style="display: none;">
         <button class="input-icon-btn" title="Attach file" id="attachBtn"><i class="fas fa-paperclip"></i></button>
+        
         <textarea class="message-input" id="messageInput" placeholder="Message chat-ai..." rows="1"></textarea>
+        
         <button class="input-icon-btn" title="Voice input" id="micBtn"><i class="fas fa-microphone"></i></button>
         <button class="send-btn" id="sendButton" disabled>
           <i class="fas fa-paper-plane"></i>
