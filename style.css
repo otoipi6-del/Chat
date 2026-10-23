@@ -424,24 +424,32 @@ body {
 }
 
 /* ==========================================
-   ПОЛЕ ВВОДА (РАБОЧАЯ ВЕРСИЯ)
+   ПОЛЕ ВВОДА (ПРАВИЛЬНОЕ РАСПОЛОЖЕНИЕ)
    ========================================== */
 .input-container {
   padding: 16px 24px 24px;
   background-color: var(--chat-bg);
   display: flex;
   justify-content: center;
+  align-items: center; /* Центрируем всё по вертикали */
   flex-shrink: 0;
   width: 100%;
+  position: relative; /* Чтобы позиционировать кнопки */
   transition: background-color 0.3s;
 }
 
+/* Скрываем инпут файла */
+#fileInput {
+  display: none;
+}
+
+/* Белая рамка для текста */
 .input-box {
   position: relative;
   width: 100%;
   max-width: 768px; 
   display: flex;
-  align-items: flex-end; /* Выравниваем по низу */
+  align-items: center;
   border: 2px solid var(--border-color);
   border-radius: 24px;
   padding: 8px 12px;
@@ -455,7 +463,23 @@ body {
   box-shadow: 0 4px 16px rgba(45, 109, 246, 0.15);
 }
 
-.input-icon-btn {
+/* Текстовое поле */
+.message-input {
+  width: 100%;
+  border: none;
+  padding: 8px 4px; 
+  font-size: 16px;
+  resize: none;
+  min-height: 24px;
+  max-height: 200px;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Общие стили для кнопок снаружи */
+.side-btn {
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -470,21 +494,19 @@ body {
   flex-shrink: 0;
 }
 
-.input-icon-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
+.side-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
-.message-input {
-  flex: 1; /* Занимает всё свободное место */
-  border: none;
-  padding: 8px 4px; 
-  font-size: 16px;
-  resize: none;
-  min-height: 24px;
-  max-height: 200px;
-  outline: none;
-  background: transparent;
-  color: var(--text-primary);
-  line-height: 1.5;
-  margin: 0 4px; 
+/* Скрепка (слева) */
+.side-btn[id="attachBtn"] {
+  margin-right: 8px; /* Отступ от рамки */
+}
+
+/* Группа кнопок справа */
+.right-buttons {
+  display: flex;
+  align-items: center;
+  margin-left: 8px; /* Отступ от рамки */
+  gap: 4px;
 }
 
 .send-btn {
@@ -499,7 +521,6 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
-  margin-bottom: 2px;
   margin-left: 4px;
   flex-shrink: 0;
 }
