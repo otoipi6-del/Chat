@@ -333,7 +333,7 @@ body {
   margin-bottom: 24px;
 }
 
-/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА, ОЧЕНЬ УЗКИЙ) */
+/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА, С ОГРАНИЧЕНИЕМ) */
 .message-wrapper.user {
   align-items: flex-end;
 }
@@ -342,10 +342,10 @@ body {
   justify-content: flex-end;
 }
 
-/* СДВИГАЕМ ЛЕВУЮ ГРАНИЦУ ПУЗЫРЯ ВПРАВО (УМЕНЬШАЕМ ШИРИНУ) */
+/* ОГРАНИЧИВАЕМ ШИРИНУ ПУЗЫРЯ */
 .message-wrapper.user .message-body {
   align-items: flex-end;
-  max-width: 50%; /* Уменьшили до 50%, чтобы пузырь стал еще короче */
+  max-width: 75%; /* Здесь задается ширина пузыря */
 }
 
 .message-wrapper.user .message-text {
@@ -515,7 +515,6 @@ body {
   .top-box { padding: 8px 12px; }
   .bottom-box { padding: 0 8px; }
 
-  /* На мобильных делаем ограничение чуть шире, чтобы текст не был слишком сжат */
   .message-wrapper.user .message-body { max-width: 85%; }
   
   .message-text { font-size: 17px; }
