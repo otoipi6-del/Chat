@@ -408,7 +408,7 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
   `;
 
   const messageDiv = document.createElement('div');
-  messageDiv.className = 'message-body'; // Убрали лишние стили
+  messageDiv.className = 'message-body'; 
   
   const isAI = sender === 'ai';
   const formattedText = text.replace(/\n/g, '<br>');
