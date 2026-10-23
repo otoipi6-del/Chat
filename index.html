@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>chat-ai</title>
+  <!-- Иконка вкладки (фавикон) -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -13,7 +15,12 @@
   <div class="sidebar hidden" id="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <i class="fas fa-robot"></i>
+        <!-- НОВЫЙ ЛОГОТИП (Двойной пузырь с большой искрой) -->
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px;">
+          <path d="M10 10C10 8.89543 10.8954 8 12 8H26C27.1046 8 28 8.89543 28 10V22C28 23.1046 27.1046 24 26 24H14L10 28V10Z" fill="var(--primary)" opacity="0.3"/>
+          <path d="M4 6C4 4.89543 4.89543 4 6 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H8L4 24V6Z" fill="var(--primary)"/>
+          <path d="M13 5L14.5 10L19 12L14.5 14L13 19L11.5 14L7 12L11.5 10L13 5Z" fill="white"/>
+        </svg>
         <span>chat-ai</span>
       </div>
     </div>
@@ -66,7 +73,14 @@
     <!-- Сообщения -->
     <div class="messages-container" id="messagesContainer">
       <div class="welcome-screen" id="welcomeScreen">
-        <div class="welcome-icon"><i class="fas fa-robot"></i></div>
+        <!-- БОЛЬШОЙ ЛОГОТИП НА ЭКРАНЕ ПРИВЕТСТВИЯ -->
+        <div class="welcome-icon" style="margin-bottom: 20px;">
+          <svg width="80" height="80" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 10C10 8.89543 10.8954 8 12 8H26C27.1046 8 28 8.89543 28 10V22C28 23.1046 27.1046 24 26 24H14L10 28V10Z" fill="var(--primary)" opacity="0.3"/>
+            <path d="M4 6C4 4.89543 4.89543 4 6 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H8L4 24V6Z" fill="var(--primary)"/>
+            <path d="M13 5L14.5 10L19 12L14.5 14L13 19L11.5 14L7 12L11.5 10L13 5Z" fill="white"/>
+          </svg>
+        </div>
         <h1>Здравствуйте!</h1>
         <p>Чем я могу вам помочь?</p>
       </div>
@@ -80,13 +94,10 @@
 
     <!-- Поле ввода (ДВЕ РАМКИ) -->
     <div class="input-container">
-      
-      <!-- Верхняя рамка (только для текста) -->
       <div class="input-box top-box">
         <textarea class="message-input" id="messageInput" placeholder="Message chat-ai..." rows="1"></textarea>
       </div>
       
-      <!-- Нижняя панель (только для кнопок) -->
       <div class="input-box bottom-box">
         <input type="file" id="fileInput" style="display: none;">
         <button class="input-icon-btn" title="Attach file" id="attachBtn"><i class="fas fa-paperclip"></i></button>
@@ -98,8 +109,7 @@
           </button>
         </div>
       </div>
-
-    </div> 
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/html-docx-js/dist/html-docx.js"></script>
