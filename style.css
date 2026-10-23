@@ -356,6 +356,7 @@ body {
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s;
   word-wrap: break-word;
+  word-break: break-all; /* Принудительно разрываем длинные слова */
 }
 
 /* ОТВЕТ AI (СЛЕВА) */
