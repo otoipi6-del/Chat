@@ -30,6 +30,10 @@ const fileInput = document.getElementById('fileInput');
 const micBtn = document.getElementById('micBtn');
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 
+// Переменные для управления запросом
+let isGenerating = false;
+let abortController = null;
+
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
 // ==========================================
@@ -92,7 +96,6 @@ function renderChatHistory() {
   });
 }
 
-// ОБНОВЛЕННОЕ МЕНЮ (СКАЧАТЬ, ПЕРЕИМЕНОВАТЬ, УДАЛИТЬ)
 function showContextMenu(e, chatId) {
   const existingMenu = document.querySelector('.chat-context-menu');
   if (existingMenu) existingMenu.remove();
@@ -111,19 +114,16 @@ function showContextMenu(e, chatId) {
 
   document.body.appendChild(menu);
 
-  // Обработчик скачивания
   document.getElementById('downloadChatBtn').addEventListener('click', () => {
     downloadFullChat(chatId);
     menu.remove();
   });
 
-  // Обработчик переименования
   document.getElementById('renameChatBtn').addEventListener('click', () => {
     renameChat(chatId);
     menu.remove();
   });
 
-  // Обработчик удаления
   document.getElementById('deleteChatBtn').addEventListener('click', () => {
     deleteChat(chatId);
     menu.remove();
@@ -139,7 +139,6 @@ function showContextMenu(e, chatId) {
   }, 10);
 }
 
-// ФУНКЦИЯ ПЕРЕИМЕНОВАНИЯ
 function renameChat(chatId) {
   const chat = chats.find(c => c.id === chatId);
   if (!chat) return;
@@ -153,7 +152,6 @@ function renameChat(chatId) {
   }
 }
 
-// ФУНКЦИЯ СКАЧИВАНИЯ ВСЕГО ЧАТА
 function downloadFullChat(chatId) {
   const chat = chats.find(c => c.id === chatId);
   if (!chat) return;
@@ -244,13 +242,15 @@ if (messageInput && sendButton) {
   messageInput.addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = (this.scrollHeight) + 'px';
-    sendButton.disabled = this.value.trim() === '';
+    if (!isGenerating) {
+        sendButton.disabled = this.value.trim() === '';
+    }
     localStorage.setItem('draftMessage', this.value);
   });
   messageInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (!sendButton.disabled) sendMessage();
+      if (!sendButton.disabled && !isGenerating) sendMessage();
     }
   });
   sendButton.addEventListener('click', sendMessage);
@@ -380,9 +380,14 @@ if (themeToggleBtn) {
 }
 
 // ==========================================
-// ОСНОВНАЯ ЛОГИКА ЧАТА
+// ОСНОВНАЯ ЛОГИКА ЧАТА (С ПОДДЕРЖКОЙ СТОП)
 // ==========================================
 async function sendMessage() {
+  if (isGenerating) {
+    if (abortController) abortController.abort();
+    return;
+  }
+
   if (!messageInput) return;
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
@@ -399,9 +404,17 @@ async function sendMessage() {
   messageInput.value = '';
   localStorage.removeItem('draftMessage');
   messageInput.style.height = 'auto';
-  if (sendButton) sendButton.disabled = true;
+  
+  // Включаем режим генерации
+  isGenerating = true;
+  sendButton.disabled = false; 
+  sendButton.innerHTML = '<i class="fas fa-square"></i>'; // Иконка стоп
+  sendButton.style.backgroundColor = '#9ca3af'; // СЕРЫЙ цвет для стоп
+  
   if (typingIndicator) typingIndicator.style.display = 'flex';
   if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+  abortController = new AbortController();
 
   try {
     const selectedProvider = providerSelect ? providerSelect.value : 'groq';
@@ -419,6 +432,7 @@ async function sendMessage() {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ model: selectedModel, messages: contextMessages }),
+        signal: abortController.signal
       });
     } else {
       response = await fetch(PROXY_URL, {
@@ -430,6 +444,7 @@ async function sendMessage() {
           messages: contextMessages,
           stream: false
         }),
+        signal: abortController.signal
       });
     }
 
@@ -448,10 +463,22 @@ async function sendMessage() {
     updateCurrentChat('ai', aiResponse, 'chat-ai');
 
   } catch (error) {
+    if (error.name === 'AbortError') {
+        console.log('Запрос отменен пользователем');
+        addMessageToUI('ai', 'Генерация ответа остановлена.', 'chat-ai');
+    } else {
+        addMessageToUI('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
+        updateCurrentChat('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
+        console.error(error);
+    }
+  } finally {
+    // Выключаем режим генерации (сбрасываем кнопку)
+    isGenerating = false;
+    abortController = null;
     if (typingIndicator) typingIndicator.style.display = 'none';
-    addMessageToUI('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
-    updateCurrentChat('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
-    console.error(error);
+    sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+    sendButton.style.backgroundColor = ''; // Возвращаем синий цвет
+    sendButton.disabled = messageInput.value.trim() === '';
   }
 }
 
