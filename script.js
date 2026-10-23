@@ -392,17 +392,42 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО: КЛАСС ВЕШАЕТСЯ НА ОБЕРТКУ)
+// ФУНКЦИИ ОТОБРАЖЕНИЯ (С ПРИНУДИТЕЛЬНЫМ CSS)
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
   
   const wrapper = document.createElement('div');
-  // ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ: добавляем класс sender (user/ai) к обертке
-  wrapper.className = `message-wrapper ${sender}`; 
+  // Принудительно задаем стили выравнивания прямо в JS, чтобы CSS не мешал
+  if (sender === 'user') {
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.alignItems = 'flex-end'; // Прижимаем вправо
+    wrapper.style.width = '100%';
+    wrapper.style.marginBottom = '24px';
+  } else {
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.alignItems = 'flex-start'; // Прижимаем влево
+    wrapper.style.width = '100%';
+    wrapper.style.marginBottom = '24px';
+  }
   
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${sender}`;
+  
+  // Для самого сообщения задаем ширину и стили
+  if (sender === 'user') {
+      messageDiv.style.maxWidth = '85%'; // Ограничиваем ширину пузыря
+      messageDiv.style.backgroundColor = 'var(--user-message-bg)';
+      messageDiv.style.padding = '12px 16px';
+      messageDiv.style.borderRadius = '16px'; // Закругляем со всех сторон
+      messageDiv.style.boxShadow = 'var(--shadow-sm)';
+      messageDiv.style.wordWrap = 'break-word';
+  } else {
+      messageDiv.style.maxWidth = '100%';
+  }
+
   const isAI = sender === 'ai';
   const formattedText = text.replace(/\n/g, '<br>');
 
