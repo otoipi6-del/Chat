@@ -342,10 +342,10 @@ body {
   justify-content: flex-end;
 }
 
-/* ОГРАНИЧИВАЕМ ШИРИНУ ПУЗЫРЯ */
+/* ОГРАНИЧЕНИЕ ШИРИНЫ ПУЗЫРЯ */
 .message-wrapper.user .message-body {
   align-items: flex-end;
-  max-width: 75%; /* Здесь задается ширина пузыря */
+  max-width: 75%; 
 }
 
 .message-wrapper.user .message-text {
