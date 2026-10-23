@@ -2,11 +2,13 @@
 // НАСТРОЙКИ И ДАННЫЕ ПРОВАЙДЕРОВ
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
+// ВСТАВЬ СЮДА URL СВОЕГО GAS ВЕБ-ПРИЛОЖЕНИЯ (из шага развертывания)
+const GROQ_GAS_URL = "https://script.google.com/macros/s/AKfycbxP2fjnGgAPBezXQQpnVzLPJwjGVVB-POlL942mxAGxeBpYgkeroacf3FPNhXwBWuXu8A/exec"; 
 
 const PROVIDER_MODELS = {
   groq: [
-    'openai/gpt-oss-120b', // Рабочая модель
-    'openai/gpt-oss-20b'   // Рабочая модель
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b'
   ],
   deepseek: [
     'deepseek-chat',
@@ -308,7 +310,7 @@ if (micBtn) {
 }
 
 // ==========================================
-// ОСНОВНАЯ ЛОГИКА ЧАТА
+// ОСНОВНАЯ ЛОГИКА ЧАТА (С ПОДДЕРЖКОЙ GAS)
 // ==========================================
 async function sendMessage() {
   if (!messageInput) return;
@@ -340,16 +342,31 @@ async function sendMessage() {
       content: m.text
     }));
 
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        provider: selectedProvider,
-        model: selectedModel,
-        messages: contextMessages,
-        stream: false
-      }),
-    });
+    let response;
+
+    if (selectedProvider === 'groq') {
+      // ОТПРАВЛЯЕМ ЗАПРОС В GAS (БЕЗ КЛЮЧА)
+      response = await fetch(GROQ_GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' }, // Используем text/plain, чтобы избежать CORS preflight
+        body: JSON.stringify({
+          model: selectedModel,
+          messages: contextMessages
+        }),
+      });
+    } else {
+      // ДЛЯ ОСТАЛЬНЫХ ПРОВАЙДЕРОВ ИСПОЛЬЗУЕМ WORKER
+      response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: selectedProvider,
+          model: selectedModel,
+          messages: contextMessages,
+          stream: false
+        }),
+      });
+    }
 
     if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
     const data = await response.json();
@@ -358,7 +375,7 @@ async function sendMessage() {
     if (data.choices && data.choices[0] && data.choices[0].message) {
         aiResponse = data.choices[0].message.content;
     } else if (data.error) {
-        throw new Error(data.error);
+        throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
     }
 
     if (typingIndicator) typingIndicator.style.display = 'none';
