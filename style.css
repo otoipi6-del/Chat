@@ -6,7 +6,7 @@
   --primary-hover: #1a56d6;
   --primary-light: #e8f0fe;
   --text-primary: #111827;
-  --text-secondary: #6b7280;
+  --text-secondary: #4b5563; /* Сделали чуть темнее для контраста */
   --bg-color: #ffffff;
   --sidebar-bg: #f9fafb;
   --border-color: #e5e7eb;
@@ -49,7 +49,6 @@ body {
   transition: transform 0.3s ease-in-out;
 }
 
-/* На ПК сайдбар скрыт по умолчанию */
 .sidebar.hidden {
   transform: translateX(-100%);
   position: absolute;
@@ -179,19 +178,31 @@ body {
   min-width: 0; 
 }
 
+/* Кнопка-гамбургер */
 .hamburger-btn {
   background: none;
-  border: none;
+  border: 1px solid transparent; /* Чтобы не прыгала верстка при наведении */
   font-size: 20px;
-  color: var(--text-secondary);
+  color: var(--text-primary); /* Сделали темнее */
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  transition: all 0.2s;
 }
 
 .hamburger-btn:hover {
-  background-color: #e5e7eb;
+  background-color: #e5e7eb; /* Фон при наведении */
+  color: var(--primary); /* Цвет иконки при наведении */
+}
+
+/* Принудительно задаем размер иконке внутри кнопки */
+.hamburger-btn i {
+  font-size: 20px;
+  line-height: 1;
 }
 
 .chat-title {
@@ -504,7 +515,6 @@ body {
    АДАПТИВНОСТЬ (Мобильные устройства)
    ========================================== */
 @media (max-width: 768px) {
-  /* На телефоне сайдбар выезжает как шторка */
   .sidebar {
     position: fixed;
     top: 0;
@@ -538,12 +548,10 @@ body {
     font-weight: 700;
   }
 
-  /* ЖЕСТКО ФИКСИРУЕМ ОБЛАСТЬ СООБЩЕНИЙ НА МОБИЛЬНЫХ */
   .messages-container {
     padding: 12px;
     padding-bottom: 90px;
-    /* На мобильных контейнер должен занимать все место под шапкой */
-    height: calc(100vh - 120px); /* Вычитаем высоту шапки и поля ввода */
+    height: calc(100vh - 120px);
     overflow-y: auto;
   }
 
