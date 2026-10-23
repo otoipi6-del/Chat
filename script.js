@@ -2,22 +2,12 @@
 // НАСТРОЙКИ И ДАННЫЕ ПРОВАЙДЕРОВ
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
-const GROQ_GAS_URL = "https://script.google.com/macros/s/ТВОЙ_ID/exec"; 
+const GROQ_GAS_URL = "https://script.google.com/macros/s/ТВОЙ_ID/exec"; // НЕ ЗАБУДЬ ВСТАВИТЬ СВОЙ URL!
 
 const PROVIDER_MODELS = {
-  groq: [
-    'openai/gpt-oss-120b',
-    'openai/gpt-oss-20b'
-  ],
-  deepseek: [
-    'deepseek-chat',
-    'deepseek-reasoner'
-  ],
-  openrouter: [
-    'openrouter/free',
-    'nvidia/nemotron-3-super-120b-a12b:free',
-    'google/gemma-4-31b-it:free'
-  ]
+  groq: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'],
+  deepseek: ['deepseek-chat', 'deepseek-reasoner'],
+  openrouter: ['openrouter/free', 'nvidia/nemotron-3-super-120b-a12b:free', 'google/gemma-4-31b-it:free']
 };
 
 // ==========================================
@@ -402,12 +392,15 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ
+// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО: КЛАСС ВЕШАЕТСЯ НА ОБЕРТКУ)
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
+  
   const wrapper = document.createElement('div');
-  wrapper.className = 'message-wrapper';
+  // ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ: добавляем класс sender (user/ai) к обертке
+  wrapper.className = `message-wrapper ${sender}`; 
+  
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${sender}`;
   const isAI = sender === 'ai';
