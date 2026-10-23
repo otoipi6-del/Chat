@@ -232,9 +232,9 @@ body {
   transition: background-color 0.3s;
 }
 
-/* --- ШАПКА (БАЛАНСИРОВКА) --- */
+/* --- ШАПКА --- */
 .chat-header {
-  padding: 10px 16px; /* Уменьшили отступы */
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -257,7 +257,7 @@ body {
 .hamburger-btn, .theme-toggle-btn {
   background: none;
   border: 1px solid transparent;
-  font-size: 18px; /* Чуть меньше иконки */
+  font-size: 18px;
   color: var(--text-primary);
   cursor: pointer;
   padding: 4px 8px;
@@ -281,27 +281,27 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--text-primary);
-  max-width: 120px; /* Сильно урезали, чтобы не мешал */
+  max-width: 120px;
 }
 
 .chat-header-right {
   display: flex;
   align-items: center;
-  gap: 6px; /* Уменьшили промежутки */
+  gap: 6px;
   flex-shrink: 1; 
   min-width: 0;
 }
 
 .provider-select {
-  padding: 4px 6px; /* Уменьшили */
+  padding: 4px 6px;
   border-radius: 6px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-size: 12px; /* Чуть меньше шрифт */
+  font-size: 12px;
   cursor: pointer;
   outline: none;
-  max-width: 110px; /* Сильно урезали */
+  max-width: 110px;
   text-overflow: ellipsis;
   transition: border-color 0.2s, background-color 0.3s;
 }
@@ -424,7 +424,7 @@ body {
 }
 
 /* ==========================================
-   ПОЛЕ ВВОДА
+   ПОЛЕ ВВОДА (ИСПРАВЛЕНО)
    ========================================== */
 .input-container {
   padding: 16px 24px 24px;
@@ -436,12 +436,13 @@ body {
   transition: background-color 0.3s;
 }
 
+/* Контейнер выстраивает все элементы в ряд */
 .input-box {
   position: relative;
   width: 100%;
   max-width: 768px; 
   display: flex;
-  align-items: flex-end;
+  align-items: flex-end; /* Кнопки прижимаются к низу */
   border: 2px solid var(--border-color);
   border-radius: 24px;
   padding: 8px 12px;
@@ -455,6 +456,7 @@ body {
   box-shadow: 0 4px 16px rgba(45, 109, 246, 0.15);
 }
 
+/* Кнопки (скрепка, микрофон, отправить) */
 .input-icon-btn {
   background: none;
   border: none;
@@ -467,12 +469,14 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
+  flex-shrink: 0; /* Кнопки не сжимаются */
 }
 
 .input-icon-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
+/* Текстовая область занимает всё свободное место */
 .message-input {
-  flex: 1;
+  flex: 1; /* Растягивается */
   border: none;
   padding: 8px;
   font-size: 16px;
@@ -483,6 +487,7 @@ body {
   background: transparent;
   color: var(--text-primary);
   line-height: 1.5;
+  margin: 0 4px; /* Небольшой отступ от кнопок */
 }
 
 .send-btn {
