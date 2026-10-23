@@ -92,7 +92,7 @@ function renderChatHistory() {
   });
 }
 
-// ОБНОВЛЕННОЕ МЕНЮ (ТЕПЕРЬ С КНОПКОЙ СКАЧИВАНИЯ)
+// ОБНОВЛЕННОЕ МЕНЮ (СКАЧАТЬ, ПЕРЕИМЕНОВАТЬ, УДАЛИТЬ)
 function showContextMenu(e, chatId) {
   const existingMenu = document.querySelector('.chat-context-menu');
   if (existingMenu) existingMenu.remove();
@@ -101,18 +101,25 @@ function showContextMenu(e, chatId) {
   menu.className = 'chat-context-menu';
   menu.innerHTML = `
     <button id="downloadChatBtn"><i class="fas fa-download"></i> Скачать DOCX</button>
+    <button id="renameChatBtn"><i class="fas fa-pen"></i> Переименовать</button>
     <button id="deleteChatBtn" style="color: #dc2626;"><i class="fas fa-trash"></i> Удалить</button>
   `;
   
   const rect = e.target.getBoundingClientRect();
   menu.style.top = `${rect.bottom + window.scrollY}px`;
-  menu.style.left = `${rect.left - 100 + window.scrollX}px`;
+  menu.style.left = `${rect.left - 120 + window.scrollX}px`;
 
   document.body.appendChild(menu);
 
-  // Обработчик скачивания всего чата
+  // Обработчик скачивания
   document.getElementById('downloadChatBtn').addEventListener('click', () => {
     downloadFullChat(chatId);
+    menu.remove();
+  });
+
+  // Обработчик переименования
+  document.getElementById('renameChatBtn').addEventListener('click', () => {
+    renameChat(chatId);
     menu.remove();
   });
 
@@ -132,17 +139,29 @@ function showContextMenu(e, chatId) {
   }, 10);
 }
 
+// ФУНКЦИЯ ПЕРЕИМЕНОВАНИЯ
+function renameChat(chatId) {
+  const chat = chats.find(c => c.id === chatId);
+  if (!chat) return;
+
+  const newTitle = prompt('Введите новое название для чата:', chat.title);
+  
+  if (newTitle && newTitle.trim() !== '') {
+    chat.title = newTitle.trim();
+    saveChats();
+    renderChatHistory();
+  }
+}
+
 // ФУНКЦИЯ СКАЧИВАНИЯ ВСЕГО ЧАТА
 function downloadFullChat(chatId) {
   const chat = chats.find(c => c.id === chatId);
   if (!chat) return;
 
-  // Формируем HTML-текст для документа
   let htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${chat.title}</title></head><body>`;
   htmlContent += `<h1>${chat.title}</h1>`;
   
   chat.messages.forEach(msg => {
-    // Время мы не храним в сообщениях, поэтому просто разделяем по ролям
     const role = msg.sender === 'user' ? 'Вы' : 'chat-ai';
     const formattedText = msg.text.replace(/\n/g, '<br>');
     htmlContent += `<p><strong>${role}:</strong><br>${formattedText}</p><hr>`;
