@@ -424,7 +424,7 @@ body {
 }
 
 /* ==========================================
-   ПОЛЕ ВВОДА (НОВАЯ ЛОГИКА: Кнопки по краям, текст по центру)
+   ПОЛЕ ВВОДА (РАБОЧАЯ ВЕРСИЯ)
    ========================================== */
 .input-container {
   padding: 16px 24px 24px;
@@ -436,12 +436,12 @@ body {
   transition: background-color 0.3s;
 }
 
-/* Контейнер для всей строки ввода */
-.input-wrapper {
-  display: flex;
-  align-items: flex-end; /* Прижимаем кнопки к низу */
+.input-box {
+  position: relative;
   width: 100%;
   max-width: 768px; 
+  display: flex;
+  align-items: flex-end; /* Выравниваем по низу */
   border: 2px solid var(--border-color);
   border-radius: 24px;
   padding: 8px 12px;
@@ -450,7 +450,7 @@ body {
   transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s;
 }
 
-.input-wrapper:focus-within {
+.input-box:focus-within {
   border-color: var(--primary);
   box-shadow: 0 4px 16px rgba(45, 109, 246, 0.15);
 }
@@ -467,14 +467,13 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
-  flex-shrink: 0; /* Кнопки не сжимаются */
+  flex-shrink: 0;
 }
 
 .input-icon-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
-/* Текстовая область занимает всё свободное место */
 .message-input {
-  flex: 1; /* Растягивается между кнопками */
+  flex: 1; /* Занимает всё свободное место */
   border: none;
   padding: 8px 4px; 
   font-size: 16px;
@@ -485,7 +484,7 @@ body {
   background: transparent;
   color: var(--text-primary);
   line-height: 1.5;
-  margin: 0 4px; /* Отступ от кнопок */
+  margin: 0 4px; 
 }
 
 .send-btn {
@@ -502,7 +501,7 @@ body {
   transition: all 0.2s;
   margin-bottom: 2px;
   margin-left: 4px;
-  flex-shrink: 0; /* Кнопка не сжимается */
+  flex-shrink: 0;
 }
 
 .send-btn:hover { background-color: var(--primary-hover); }
@@ -541,7 +540,7 @@ body {
     padding: 8px 10px 12px; 
   }
   
-  .input-wrapper {
+  .input-box {
     max-width: 100%;
     padding: 6px 8px; 
   }
