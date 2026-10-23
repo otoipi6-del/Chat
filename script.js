@@ -2,7 +2,7 @@
 // НАСТРОЙКИ И ДАННЫЕ ПРОВАЙДЕРОВ
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
-// ВСТАВЬ СЮДА URL СВОЕГО GAS ВЕБ-ПРИЛОЖЕНИЯ (из шага развертывания)
+// ВСТАВЬ СЮДА URL СВОЕГО GAS ВЕБ-ПРИЛОЖЕНИЯ
 const GROQ_GAS_URL = "https://script.google.com/macros/s/AKfycbxP2fjnGgAPBezXQQpnVzLPJwjGVVB-POlL942mxAGxeBpYgkeroacf3FPNhXwBWuXu8A/exec"; 
 
 const PROVIDER_MODELS = {
@@ -56,10 +56,16 @@ function updateModelList() {
   });
 }
 
+// УСТАНАВЛИВАЕМ GROQ И ЛУЧШУЮ МОДЕЛЬ ПО УМОЛЧАНИЮ
 if (providerSelect) {
-  providerSelect.value = "openrouter";
+  providerSelect.value = "groq"; // Выбираем Groq
   providerSelect.addEventListener('change', updateModelList);
-  updateModelList();
+  updateModelList(); // Заполняем список моделями Groq
+  
+  // Выбираем первую модель (openai/gpt-oss-120b)
+  if (modelSelect && modelSelect.options.length > 0) {
+    modelSelect.selectedIndex = 0; 
+  }
 }
 
 // ==========================================
@@ -310,7 +316,7 @@ if (micBtn) {
 }
 
 // ==========================================
-// ОСНОВНАЯ ЛОГИКА ЧАТА (С ПОДДЕРЖКОЙ GAS)
+// ОСНОВНАЯ ЛОГИКА ЧАТА
 // ==========================================
 async function sendMessage() {
   if (!messageInput) return;
@@ -334,8 +340,8 @@ async function sendMessage() {
   if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    const selectedProvider = providerSelect ? providerSelect.value : 'openrouter';
-    const selectedModel = modelSelect ? modelSelect.value : 'openrouter/free';
+    const selectedProvider = providerSelect ? providerSelect.value : 'groq';
+    const selectedModel = modelSelect ? modelSelect.value : 'openai/gpt-oss-120b';
     const currentChat = chats.find(c => c.id === currentChatId);
     const contextMessages = currentChat.messages.map(m => ({
       role: m.sender === 'user' ? 'user' : 'assistant',
@@ -345,17 +351,15 @@ async function sendMessage() {
     let response;
 
     if (selectedProvider === 'groq') {
-      // ОТПРАВЛЯЕМ ЗАПРОС В GAS (БЕЗ КЛЮЧА)
       response = await fetch(GROQ_GAS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' }, // Используем text/plain, чтобы избежать CORS preflight
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
           model: selectedModel,
           messages: contextMessages
         }),
       });
     } else {
-      // ДЛЯ ОСТАЛЬНЫХ ПРОВАЙДЕРОВ ИСПОЛЬЗУЕМ WORKER
       response = await fetch(PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
