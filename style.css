@@ -319,10 +319,13 @@ body {
   padding: 24px;
   display: flex;
   flex-direction: column;
+  /* ВАЖНО: Убираем центрирование, чтобы сообщения прижимались к краям */
+  align-items: stretch; 
   overscroll-behavior-y: contain; 
   padding-bottom: 80px; 
 }
 
+/* Обертка для каждого сообщения */
 .message-wrapper {
   width: 100%;
   max-width: 768px; 
@@ -332,7 +335,7 @@ body {
   margin-bottom: 24px;
 }
 
-/* ПРИНУДИТЕЛЬНОЕ ВЫРАВНИВАНИЕ ВПРАВО */
+/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА) */
 .message-wrapper.user {
   align-items: flex-end;
 }
@@ -350,14 +353,15 @@ body {
   background-color: var(--user-message-bg);
   padding: 12px 16px;
   border-radius: 16px;
-  border-bottom-right-radius: 4px;
+  /* Закругляем все углы, чтобы не было острых краев */
+  border-radius: 16px; 
   color: var(--text-primary);
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s;
-  word-wrap: break-word; 
+  word-wrap: break-word;
 }
 
-/* ПРИНУДИТЕЛЬНОЕ ВЫРАВНИВАНИЕ ВЛЕВО */
+/* ОТВЕТ AI (СЛЕВА) */
 .message-wrapper.ai {
   align-items: flex-start;
 }
