@@ -78,14 +78,17 @@
       </div>
     </div>
 
-    <!-- Поле ввода (ВОЗВРАЩАЕМ КНОПКИ ВНУТРЬ) -->
+    <!-- Поле ввода (НОВАЯ СТРУКТУРА: Кнопки вынесены) -->
     <div class="input-container">
-      <div class="input-box">
+      <div class="input-wrapper">
+        <!-- Скрепка слева -->
         <input type="file" id="fileInput" style="display: none;">
         <button class="input-icon-btn" title="Attach file" id="attachBtn"><i class="fas fa-paperclip"></i></button>
         
+        <!-- Текстовое поле -->
         <textarea class="message-input" id="messageInput" placeholder="Message chat-ai..." rows="1"></textarea>
         
+        <!-- Кнопки справа -->
         <button class="input-icon-btn" title="Voice input" id="micBtn"><i class="fas fa-microphone"></i></button>
         <button class="send-btn" id="sendButton" disabled>
           <i class="fas fa-paper-plane"></i>
