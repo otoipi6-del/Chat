@@ -392,7 +392,7 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО)
+// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО: ИМЯ НАД ПУЗЫРЕМ)
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
@@ -401,28 +401,46 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
   wrapper.style.display = 'flex';
   wrapper.style.flexDirection = 'column';
   wrapper.style.width = '100%';
-  wrapper.style.maxWidth = '768px'; // Ограничиваем ширину карточки
-  wrapper.style.margin = '0 auto 24px auto'; // Центрируем
+  wrapper.style.maxWidth = '768px'; 
+  wrapper.style.margin = '0 auto 24px auto'; 
   wrapper.style.boxSizing = 'border-box';
 
-  // ЖЕСТКО ЗАДАЕМ ВЫРАВНИВАНИЕ В JS
   if (sender === 'user') {
-    wrapper.style.alignItems = 'flex-end'; // Вправо
+    wrapper.style.alignItems = 'flex-end'; 
   } else {
-    wrapper.style.alignItems = 'flex-start'; // Влево
+    wrapper.style.alignItems = 'flex-start'; 
   }
   
+  // 1. Создаем заголовок (Имя и время)
+  const headerDiv = document.createElement('div');
+  headerDiv.style.display = 'flex';
+  headerDiv.style.alignItems = 'center';
+  headerDiv.style.gap = '8px';
+  headerDiv.style.marginBottom = '6px';
+  headerDiv.style.width = '100%';
+  
+  if (sender === 'user') {
+      headerDiv.style.justifyContent = 'flex-end';
+  } else {
+      headerDiv.style.justifyContent = 'flex-start';
+  }
+
+  headerDiv.innerHTML = `
+    <div style="font-weight: 700; font-size: 15px; color: var(--text-primary);">${senderName}</div>
+    <div style="font-size: 13px; color: var(--text-secondary);">${getCurrentTime()}</div>
+  `;
+
+  // 2. Создаем само сообщение (пузырь)
   const messageDiv = document.createElement('div');
   messageDiv.style.display = 'flex';
   messageDiv.style.flexDirection = 'column';
   
-  // Стили для пузыря
   if (sender === 'user') {
       messageDiv.style.alignItems = 'flex-end';
-      messageDiv.style.maxWidth = '75%'; // Ограничиваем ширину вопроса
+      messageDiv.style.maxWidth = '75%'; 
       messageDiv.style.backgroundColor = 'var(--user-message-bg)';
       messageDiv.style.padding = '12px 16px';
-      messageDiv.style.borderRadius = '16px'; // Все углы скруглены
+      messageDiv.style.borderRadius = '16px'; 
       messageDiv.style.boxShadow = 'var(--shadow-sm)';
       messageDiv.style.wordWrap = 'break-word';
       messageDiv.style.color = 'var(--text-primary)';
@@ -446,15 +464,10 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
     `;
   }
 
+  // Внутрь messageDiv кладем ТОЛЬКО текст и кнопки (без хедера)
   messageDiv.innerHTML = `
-    <div class="message-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px; width: 100%; ${sender === 'user' ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}">
-      <div class="sender-name" style="font-weight: 700; font-size: 15px; color: var(--text-primary);">${senderName}</div>
-      <div class="message-time" style="font-size: 13px; color: var(--text-secondary);">${getCurrentTime()}</div>
-    </div>
-    <div class="message-body" style="display: flex; flex-direction: column; width: 100%;">
-      <div class="message-text" style="line-height: 1.65; word-wrap: break-word; font-size: 16px;">${formattedText}</div>
-      ${actionButtonsHtml}
-    </div>
+    <div class="message-text" style="line-height: 1.65; word-wrap: break-word; font-size: 16px;">${formattedText}</div>
+    ${actionButtonsHtml}
   `;
 
   if (isAI) {
@@ -464,7 +477,10 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
     docxBtn.addEventListener('click', () => downloadAsDocx(text));
   }
 
+  // Собираем всё вместе: сначала Заголовок, потом Пузырь
+  wrapper.appendChild(headerDiv);
   wrapper.appendChild(messageDiv);
+  
   messagesContainer.insertBefore(wrapper, typingIndicator);
   if (scroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
