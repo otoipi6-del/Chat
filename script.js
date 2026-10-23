@@ -392,7 +392,7 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО: ИМЯ НАД ПУЗЫРЕМ)
+// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО: ПЕРЕНОС ТЕКСТА)
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
@@ -437,12 +437,15 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
   
   if (sender === 'user') {
       messageDiv.style.alignItems = 'flex-end';
-      messageDiv.style.maxWidth = '75%'; 
+      // Убираем жесткое ограничение ширины, даем тексту самому определять
+      messageDiv.style.maxWidth = '85%'; 
       messageDiv.style.backgroundColor = 'var(--user-message-bg)';
       messageDiv.style.padding = '12px 16px';
       messageDiv.style.borderRadius = '16px'; 
       messageDiv.style.boxShadow = 'var(--shadow-sm)';
-      messageDiv.style.wordWrap = 'break-word';
+      // ВАЖНО: Эти два свойства заставят длинный текст переноситься
+      messageDiv.style.wordBreak = 'break-word';
+      messageDiv.style.whiteSpace = 'pre-wrap';
       messageDiv.style.color = 'var(--text-primary)';
   } else {
       messageDiv.style.alignItems = 'flex-start';
@@ -464,7 +467,6 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
     `;
   }
 
-  // Внутрь messageDiv кладем ТОЛЬКО текст и кнопки (без хедера)
   messageDiv.innerHTML = `
     <div class="message-text" style="line-height: 1.65; word-wrap: break-word; font-size: 16px;">${formattedText}</div>
     ${actionButtonsHtml}
@@ -477,7 +479,6 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
     docxBtn.addEventListener('click', () => downloadAsDocx(text));
   }
 
-  // Собираем всё вместе: сначала Заголовок, потом Пузырь
   wrapper.appendChild(headerDiv);
   wrapper.appendChild(messageDiv);
   
