@@ -500,7 +500,10 @@ body {
     height: 100vh;
     box-shadow: 2px 0 10px rgba(0,0,0,0.2);
     transform: translateX(0);
+    /* ДОБАВЛЕНО: Отступ снизу, чтобы кнопка не уходила под панель браузера */
+    padding-bottom: 60px; 
   }
+  
   .sidebar.hidden { transform: translateX(-100%); }
 
   .chat-header { padding: 10px 12px; gap: 6px; }
