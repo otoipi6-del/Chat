@@ -182,7 +182,7 @@ body {
   text-align: left;
   font-size: 13px;
   cursor: pointer;
-  color: #dc2626;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -190,9 +190,11 @@ body {
 }
 
 .chat-context-menu button:hover {
-  background-color: rgba(220, 38, 38, 0.1);
+  background-color: var(--border-color);
+  color: var(--text-primary);
 }
 
+/* Кнопка "Очистить историю" - СЕРАЯ */
 .sidebar-footer {
   padding: 16px;
   border-top: 1px solid var(--border-color);
@@ -202,8 +204,8 @@ body {
   width: 100%;
   padding: 10px;
   background: none;
-  border: 1px solid #dc2626;
-  color: #dc2626;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -215,7 +217,8 @@ body {
 }
 
 .clear-all-btn:hover {
-  background-color: rgba(220, 38, 38, 0.1);
+  background-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 /* ==========================================
@@ -333,7 +336,7 @@ body {
   margin-bottom: 24px;
 }
 
-/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА, С ОГРАНИЧЕНИЕМ) */
+/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА) */
 .message-wrapper.user {
   align-items: flex-end;
 }
@@ -342,7 +345,6 @@ body {
   justify-content: flex-end;
 }
 
-/* ОГРАНИЧЕНИЕ ШИРИНЫ ПУЗЫРЯ */
 .message-wrapper.user .message-body {
   align-items: flex-end;
   max-width: 75%; 
@@ -356,7 +358,7 @@ body {
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s;
   word-wrap: break-word;
-  word-break: break-all; /* Принудительно разрываем длинные слова */
+  word-break: break-all;
 }
 
 /* ОТВЕТ AI (СЛЕВА) */
