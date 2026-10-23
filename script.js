@@ -392,7 +392,7 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ (БЕЗ ЖЕСТКИХ СТИЛЕЙ)
+// ФУНКЦИИ ОТОБРАЖЕНИЯ
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
