@@ -78,23 +78,26 @@
       </div>
     </div>
 
-    <!-- Поле ввода (КНОПКИ ВЫНЕСЕНЫ ЗА РАМКУ) -->
+    <!-- Поле ввода (КНОПКИ ПОД ТЕКСТОМ) -->
     <div class="input-container">
-      <!-- Левая кнопка -->
-      <input type="file" id="fileInput" style="display: none;">
-      <button class="input-icon-btn side-btn" title="Attach file" id="attachBtn"><i class="fas fa-paperclip"></i></button>
-      
-      <!-- Рамка только для текста -->
       <div class="input-box">
+        
+        <!-- Текстовая область сверху -->
         <textarea class="message-input" id="messageInput" placeholder="Message chat-ai..." rows="1"></textarea>
-      </div>
-      
-      <!-- Правая группа кнопок -->
-      <div class="right-buttons">
-        <button class="input-icon-btn side-btn" title="Voice input" id="micBtn"><i class="fas fa-microphone"></i></button>
-        <button class="send-btn side-btn" id="sendButton" disabled>
-          <i class="fas fa-paper-plane"></i>
-        </button>
+        
+        <!-- Блок с кнопками снизу -->
+        <div class="input-actions">
+          <input type="file" id="fileInput" style="display: none;">
+          <button class="input-icon-btn" title="Attach file" id="attachBtn"><i class="fas fa-paperclip"></i></button>
+          
+          <div class="right-actions">
+            <button class="input-icon-btn" title="Voice input" id="micBtn"><i class="fas fa-microphone"></i></button>
+            <button class="send-btn" id="sendButton" disabled>
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
