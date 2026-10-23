@@ -4,21 +4,9 @@
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
 
 const PROVIDER_MODELS = {
-  groq: [
-    'llama-3.1-8b-instant',
-    'llama-3.3-70b-versatile',
-    'openai/gpt-oss-120b',
-    'qwen/qwen3-32b'
-  ],
-  deepseek: [
-    'deepseek-chat',
-    'deepseek-reasoner'
-  ],
-  openrouter: [
-    'openrouter/free',
-    'nvidia/nemotron-3-super-120b-a12b:free',
-    'google/gemma-4-31b-it:free'
-  ]
+  groq: ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'openai/gpt-oss-120b', 'qwen/qwen3-32b'],
+  deepseek: ['deepseek-chat', 'deepseek-reasoner'],
+  openrouter: ['openrouter/free', 'nvidia/nemotron-3-super-120b-a12b:free', 'google/gemma-4-31b-it:free']
 };
 
 // ==========================================
@@ -33,7 +21,6 @@ const modelSelect = document.getElementById('modelSelect');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const sidebar = document.getElementById('sidebar');
 const openSidebarBtn = document.getElementById('openSidebarBtn');
-const closeSidebarBtn = document.getElementById('closeSidebarBtn');
 const newChatBtn = document.getElementById('newChatBtn');
 const chatHistoryContainer = document.getElementById('chatHistory');
 
@@ -41,11 +28,10 @@ const chatHistoryContainer = document.getElementById('chatHistory');
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
 // ==========================================
 function updateModelList() {
+  if (!providerSelect || !modelSelect) return;
   const provider = providerSelect.value;
   const models = PROVIDER_MODELS[provider] || [];
-  
   modelSelect.innerHTML = '';
-  
   models.forEach(model => {
     const option = document.createElement('option');
     option.value = model;
@@ -54,9 +40,11 @@ function updateModelList() {
   });
 }
 
-providerSelect.value = "openrouter";
-providerSelect.addEventListener('change', updateModelList);
-updateModelList();
+if (providerSelect) {
+  providerSelect.value = "openrouter";
+  providerSelect.addEventListener('change', updateModelList);
+  updateModelList();
+}
 
 // ==========================================
 // УПРАВЛЕНИЕ ИСТОРИЕЙ ЧАТОВ
@@ -65,25 +53,22 @@ let currentChatId = null;
 let chats = JSON.parse(localStorage.getItem('chat_history')) || [];
 
 function renderChatHistory() {
+  if (!chatHistoryContainer) return;
   chatHistoryContainer.innerHTML = '';
-  
   const validChats = chats.filter(chat => chat.messages.length > 0);
   
   validChats.forEach(chat => {
     const wrapper = document.createElement('div');
     wrapper.className = `chat-item-wrapper ${chat.id === currentChatId ? 'active' : ''}`;
     wrapper.dataset.id = chat.id;
-    
     wrapper.innerHTML = `
       <span class="chat-item-text">${chat.title}</span>
       <button class="chat-item-menu"><i class="fas fa-ellipsis-h"></i></button>
     `;
-    
     wrapper.addEventListener('click', (e) => {
       if (e.target.closest('.chat-item-menu')) return;
       loadChat(chat.id);
     });
-
     chatHistoryContainer.appendChild(wrapper);
   });
 }
@@ -91,21 +76,14 @@ function renderChatHistory() {
 function loadChat(id) {
   const chat = chats.find(c => c.id === id);
   if (!chat) return;
-  
   currentChatId = id;
   renderChatHistory();
   clearMessagesUI();
-  
   chat.messages.forEach(msg => {
     addMessageToUI(msg.sender, msg.text, msg.senderName, false);
   });
-  
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  // Закрываем сайдбар на мобильных при выборе чата
-  if (window.innerWidth <= 768) {
-    sidebar.classList.add('hidden');
-  }
+  if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  if (window.innerWidth <= 768) closeSidebar();
 }
 
 function saveChats() {
@@ -114,117 +92,137 @@ function saveChats() {
 
 function updateCurrentChat(sender, text, senderName) {
   if (!currentChatId) return;
-  
   const chat = chats.find(c => c.id === currentChatId);
   if (chat) {
     chat.messages.push({ sender, text, senderName });
-    
     if (chat.messages.length === 1 && sender === 'user') {
       chat.title = text.substring(0, 25) + (text.length > 25 ? '...' : '');
       renderChatHistory();
     }
-    
     saveChats();
   }
 }
 
 function clearMessagesUI() {
+  if (!messagesContainer) return;
   const messages = messagesContainer.querySelectorAll('.message-wrapper');
   messages.forEach(msg => msg.remove());
-  
-  if (welcomeScreen) {
-    welcomeScreen.style.display = 'flex';
-  }
+  if (welcomeScreen) welcomeScreen.style.display = 'flex';
 }
 
 // ==========================================
 // СОХРАНЕНИЕ ВВЕДЕННОГО ТЕКСТА
 // ==========================================
-const savedInput = localStorage.getItem('draftMessage');
-if (savedInput) {
-  messageInput.value = savedInput;
-  messageInput.style.height = 'auto';
-  messageInput.style.height = (messageInput.scrollHeight) + 'px';
-  sendButton.disabled = savedInput.trim() === '';
+if (messageInput && sendButton) {
+  const savedInput = localStorage.getItem('draftMessage');
+  if (savedInput) {
+    messageInput.value = savedInput;
+    messageInput.style.height = 'auto';
+    messageInput.style.height = (messageInput.scrollHeight) + 'px';
+    sendButton.disabled = savedInput.trim() === '';
+  }
+  messageInput.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+    sendButton.disabled = this.value.trim() === '';
+    localStorage.setItem('draftMessage', this.value);
+  });
+  messageInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!sendButton.disabled) sendMessage();
+    }
+  });
+  sendButton.addEventListener('click', sendMessage);
 }
 
-messageInput.addEventListener('input', function() {
-  this.style.height = 'auto';
-  this.style.height = (this.scrollHeight) + 'px';
-  sendButton.disabled = this.value.trim() === '';
-  
-  localStorage.setItem('draftMessage', this.value);
-});
-
-messageInput.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    if (!sendButton.disabled) {
-      sendMessage();
-    }
-  }
-});
-
-sendButton.addEventListener('click', sendMessage);
-
 // ==========================================
-// БОКОВАЯ ПАНЕЛЬ
+// БОКОВАЯ ПАНЕЛЬ (САЙДБАР)
 // ==========================================
-openSidebarBtn.addEventListener('click', () => {
+
+// Явно задаем функции открытия и закрытия
+window.openSidebar = function() {
+  if (!sidebar || !openSidebarBtn) return;
   sidebar.classList.remove('hidden');
-});
+  // Принудительно ставим иконку крестика
+  openSidebarBtn.innerHTML = '<i class="fas fa-times" style="color: var(--primary);"></i>';
+}
 
-closeSidebarBtn.addEventListener('click', () => {
+window.closeSidebar = function() {
+  if (!sidebar || !openSidebarBtn) return;
   sidebar.classList.add('hidden');
+  // Принудительно ставим иконку гамбургера
+  openSidebarBtn.innerHTML = '<i class="fas fa-bars"></i>';
+}
+
+// Обработчик клика по кнопке
+if (openSidebarBtn) {
+  openSidebarBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (sidebar.classList.contains('hidden')) {
+      window.openSidebar();
+    } else {
+      window.closeSidebar();
+    }
+  });
+}
+
+// Закрытие при клике вне сайдбара
+document.addEventListener('click', (e) => {
+  if (!sidebar || !openSidebarBtn) return;
+  if (!sidebar.classList.contains('hidden') && 
+      !sidebar.contains(e.target) && 
+      !openSidebarBtn.contains(e.target)) {
+    window.closeSidebar();
+  }
 });
 
-newChatBtn.addEventListener('click', () => {
-  currentChatId = null;
-  clearMessagesUI();
-  renderChatHistory();
-  
-  if (window.innerWidth <= 768) {
-    sidebar.classList.add('hidden');
-  }
-  
-  messageInput.focus();
-});
+// Кнопка "New Chat"
+if (newChatBtn) {
+  newChatBtn.addEventListener('click', () => {
+    currentChatId = null;
+    clearMessagesUI();
+    renderChatHistory();
+    if (window.innerWidth <= 768) window.closeSidebar();
+    if (messageInput) messageInput.focus();
+  });
+}
+
+// Заглушки
+const attachBtn = document.getElementById('attachBtn');
+if (attachBtn) attachBtn.addEventListener('click', () => alert('Функция прикрепления файлов будет добавлена.'));
+
+const micBtn = document.getElementById('micBtn');
+if (micBtn) micBtn.addEventListener('click', () => alert('Функция голосового ввода будет добавлена.'));
 
 // ==========================================
 // ОСНОВНАЯ ЛОГИКА ЧАТА
 // ==========================================
 async function sendMessage() {
+  if (!messageInput) return;
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
   if (!currentChatId) {
     currentChatId = Date.now().toString();
-    chats.unshift({
-      id: currentChatId,
-      title: 'Новый чат',
-      messages: []
-    });
+    chats.unshift({ id: currentChatId, title: 'Новый чат', messages: [] });
   }
 
-  if (welcomeScreen) {
-    welcomeScreen.style.display = 'none';
-  }
-
+  if (welcomeScreen) welcomeScreen.style.display = 'none';
   addMessageToUI('user', messageText, 'Вы');
   updateCurrentChat('user', messageText, 'Вы');
 
   messageInput.value = '';
   localStorage.removeItem('draftMessage');
   messageInput.style.height = 'auto';
-  sendButton.disabled = true;
-
-  typingIndicator.style.display = 'flex';
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  if (sendButton) sendButton.disabled = true;
+  if (typingIndicator) typingIndicator.style.display = 'flex';
+  if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    const selectedProvider = providerSelect.value;
-    const selectedModel = modelSelect.value;
-
+    const selectedProvider = providerSelect ? providerSelect.value : 'openrouter';
+    const selectedModel = modelSelect ? modelSelect.value : 'openrouter/free';
     const currentChat = chats.find(c => c.id === currentChatId);
     const contextMessages = currentChat.messages.map(m => ({
       role: m.sender === 'user' ? 'user' : 'assistant',
@@ -233,9 +231,7 @@ async function sendMessage() {
 
     const response = await fetch(PROXY_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         provider: selectedProvider,
         model: selectedModel,
@@ -244,10 +240,7 @@ async function sendMessage() {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Ошибка сервера: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
     const data = await response.json();
     
     let aiResponse = "Не удалось извлечь ответ.";
@@ -257,12 +250,12 @@ async function sendMessage() {
         throw new Error(data.error);
     }
 
-    typingIndicator.style.display = 'none';
+    if (typingIndicator) typingIndicator.style.display = 'none';
     addMessageToUI('ai', aiResponse, 'chat-ai');
     updateCurrentChat('ai', aiResponse, 'chat-ai');
 
   } catch (error) {
-    typingIndicator.style.display = 'none';
+    if (typingIndicator) typingIndicator.style.display = 'none';
     addMessageToUI('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
     updateCurrentChat('ai', `Произошла ошибка: ${error.message}.`, 'chat-ai');
     console.error(error);
@@ -273,26 +266,20 @@ async function sendMessage() {
 // ФУНКЦИИ ОТОБРАЖЕНИЯ
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
+  if (!messagesContainer || !typingIndicator) return;
   const wrapper = document.createElement('div');
   wrapper.className = 'message-wrapper';
-
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${sender}`;
-  
   const isAI = sender === 'ai';
-
   const formattedText = text.replace(/\n/g, '<br>');
 
   let actionButtonsHtml = '';
   if (isAI) {
     actionButtonsHtml = `
       <div class="message-actions">
-        <button class="action-btn copy-btn" title="Копировать">
-          <i class="fas fa-copy"></i> Копировать
-        </button>
-        <button class="action-btn docx-btn" title="Скачать DOCX">
-          <i class="fas fa-file-word"></i> Скачать DOCX
-        </button>
+        <button class="action-btn copy-btn" title="Копировать"><i class="fas fa-copy"></i> Копировать</button>
+        <button class="action-btn docx-btn" title="Скачать DOCX"><i class="fas fa-file-word"></i> Скачать DOCX</button>
       </div>
     `;
   }
@@ -303,9 +290,7 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
       <div class="message-time">${getCurrentTime()}</div>
     </div>
     <div class="message-body">
-      <div class="message-text">
-        ${formattedText}
-      </div>
+      <div class="message-text">${formattedText}</div>
       ${actionButtonsHtml}
     </div>
   `;
@@ -313,17 +298,13 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
   if (isAI) {
     const copyBtn = messageDiv.querySelector('.copy-btn');
     const docxBtn = messageDiv.querySelector('.docx-btn');
-
     copyBtn.addEventListener('click', () => copyToClipboard(text));
     docxBtn.addEventListener('click', () => downloadAsDocx(text));
   }
 
   wrapper.appendChild(messageDiv);
   messagesContainer.insertBefore(wrapper, typingIndicator);
-  
-  if (scroll) {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
+  if (scroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 // ==========================================
@@ -334,7 +315,6 @@ async function copyToClipboard(text) {
     await navigator.clipboard.writeText(text);
     alert('Текст скопирован в буфер обмена!');
   } catch (err) {
-    console.error('Ошибка копирования:', err);
     alert('Не удалось скопировать текст.');
   }
 }
@@ -344,17 +324,7 @@ function downloadAsDocx(text) {
     alert('Библиотека для создания DOCX не загружена.');
     return;
   }
-
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head><meta charset="UTF-8"></head>
-    <body>
-      <p>${text.replace(/\n/g, "</p><p>")}</p>
-    </body>
-    </html>
-  `;
-  
+  const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><p>${text.replace(/\n/g, "</p><p>")}</p></body></html>`;
   try {
     const blob = htmlDocx.asBlob(htmlContent);
     const url = URL.createObjectURL(blob);
@@ -366,7 +336,6 @@ function downloadAsDocx(text) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   } catch (err) {
-    console.error('Ошибка создания DOCX:', err);
     alert('Не удалось создать файл DOCX.');
   }
 }
@@ -383,3 +352,8 @@ function getCurrentTime() {
 // ==========================================
 renderChatHistory();
 clearMessagesUI();
+
+// Принудительно ставим иконку гамбургера при загрузке
+if (openSidebarBtn) {
+  openSidebarBtn.innerHTML = '<i class="fas fa-bars"></i>';
+}
