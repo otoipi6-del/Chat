@@ -333,7 +333,7 @@ body {
   margin-bottom: 24px;
 }
 
-/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА, УЗКИЙ) */
+/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА, ОЧЕНЬ УЗКИЙ) */
 .message-wrapper.user {
   align-items: flex-end;
 }
@@ -345,7 +345,7 @@ body {
 /* СДВИГАЕМ ЛЕВУЮ ГРАНИЦУ ПУЗЫРЯ ВПРАВО (УМЕНЬШАЕМ ШИРИНУ) */
 .message-wrapper.user .message-body {
   align-items: flex-end;
-  max-width: 60%; /* Ограничиваем ширину пузыря до 60% */
+  max-width: 50%; /* Уменьшили до 50%, чтобы пузырь стал еще короче */
 }
 
 .message-wrapper.user .message-text {
