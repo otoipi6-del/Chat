@@ -392,83 +392,39 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО: ПЕРЕНОС ТЕКСТА)
+// ФУНКЦИИ ОТОБРАЖЕНИЯ (БЕЗ ЖЕСТКИХ СТИЛЕЙ)
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
   
   const wrapper = document.createElement('div');
-  wrapper.style.display = 'flex';
-  wrapper.style.flexDirection = 'column';
-  wrapper.style.width = '100%';
-  wrapper.style.maxWidth = '768px'; 
-  wrapper.style.margin = '0 auto 24px auto'; 
-  wrapper.style.boxSizing = 'border-box';
-
-  if (sender === 'user') {
-    wrapper.style.alignItems = 'flex-end'; 
-  } else {
-    wrapper.style.alignItems = 'flex-start'; 
-  }
+  wrapper.className = `message-wrapper ${sender}`;
   
-  // 1. Создаем заголовок (Имя и время)
   const headerDiv = document.createElement('div');
-  headerDiv.style.display = 'flex';
-  headerDiv.style.alignItems = 'center';
-  headerDiv.style.gap = '8px';
-  headerDiv.style.marginBottom = '6px';
-  headerDiv.style.width = '100%';
-  
-  if (sender === 'user') {
-      headerDiv.style.justifyContent = 'flex-end';
-  } else {
-      headerDiv.style.justifyContent = 'flex-start';
-  }
-
+  headerDiv.className = 'message-header';
   headerDiv.innerHTML = `
-    <div style="font-weight: 700; font-size: 15px; color: var(--text-primary);">${senderName}</div>
-    <div style="font-size: 13px; color: var(--text-secondary);">${getCurrentTime()}</div>
+    <div class="sender-name">${senderName}</div>
+    <div class="message-time">${getCurrentTime()}</div>
   `;
 
-  // 2. Создаем само сообщение (пузырь)
   const messageDiv = document.createElement('div');
-  messageDiv.style.display = 'flex';
-  messageDiv.style.flexDirection = 'column';
+  messageDiv.className = 'message-body'; // Убрали лишние стили
   
-  if (sender === 'user') {
-      messageDiv.style.alignItems = 'flex-end';
-      // Убираем жесткое ограничение ширины, даем тексту самому определять
-      messageDiv.style.maxWidth = '85%'; 
-      messageDiv.style.backgroundColor = 'var(--user-message-bg)';
-      messageDiv.style.padding = '12px 16px';
-      messageDiv.style.borderRadius = '16px'; 
-      messageDiv.style.boxShadow = 'var(--shadow-sm)';
-      // ВАЖНО: Эти два свойства заставят длинный текст переноситься
-      messageDiv.style.wordBreak = 'break-word';
-      messageDiv.style.whiteSpace = 'pre-wrap';
-      messageDiv.style.color = 'var(--text-primary)';
-  } else {
-      messageDiv.style.alignItems = 'flex-start';
-      messageDiv.style.maxWidth = '100%';
-      messageDiv.style.backgroundColor = 'transparent';
-      messageDiv.style.color = 'var(--text-primary)';
-  }
-
   const isAI = sender === 'ai';
   const formattedText = text.replace(/\n/g, '<br>');
 
   let actionButtonsHtml = '';
   if (isAI) {
     actionButtonsHtml = `
-      <div class="message-actions" style="display: flex; gap: 8px; margin-top: 8px;">
-        <button class="action-btn copy-btn" title="Копировать" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: var(--shadow-sm);"><i class="fas fa-copy"></i> Копировать</button>
-        <button class="action-btn docx-btn" title="Скачать DOCX" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: var(--shadow-sm);"><i class="fas fa-file-word"></i> Скачать DOCX</button>
+      <div class="message-actions">
+        <button class="action-btn copy-btn" title="Копировать"><i class="fas fa-copy"></i> Копировать</button>
+        <button class="action-btn docx-btn" title="Скачать DOCX"><i class="fas fa-file-word"></i> Скачать DOCX</button>
       </div>
     `;
   }
 
   messageDiv.innerHTML = `
-    <div class="message-text" style="line-height: 1.65; word-wrap: break-word; font-size: 16px;">${formattedText}</div>
+    <div class="message-text">${formattedText}</div>
     ${actionButtonsHtml}
   `;
 
