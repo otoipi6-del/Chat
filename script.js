@@ -92,13 +92,17 @@ function renderChatHistory() {
   });
 }
 
+// ОБНОВЛЕННОЕ МЕНЮ (ТЕПЕРЬ С КНОПКОЙ СКАЧИВАНИЯ)
 function showContextMenu(e, chatId) {
   const existingMenu = document.querySelector('.chat-context-menu');
   if (existingMenu) existingMenu.remove();
 
   const menu = document.createElement('div');
   menu.className = 'chat-context-menu';
-  menu.innerHTML = `<button id="deleteChatBtn"><i class="fas fa-trash"></i> Удалить</button>`;
+  menu.innerHTML = `
+    <button id="downloadChatBtn"><i class="fas fa-download"></i> Скачать DOCX</button>
+    <button id="deleteChatBtn" style="color: #dc2626;"><i class="fas fa-trash"></i> Удалить</button>
+  `;
   
   const rect = e.target.getBoundingClientRect();
   menu.style.top = `${rect.bottom + window.scrollY}px`;
@@ -106,6 +110,13 @@ function showContextMenu(e, chatId) {
 
   document.body.appendChild(menu);
 
+  // Обработчик скачивания всего чата
+  document.getElementById('downloadChatBtn').addEventListener('click', () => {
+    downloadFullChat(chatId);
+    menu.remove();
+  });
+
+  // Обработчик удаления
   document.getElementById('deleteChatBtn').addEventListener('click', () => {
     deleteChat(chatId);
     menu.remove();
@@ -119,6 +130,40 @@ function showContextMenu(e, chatId) {
       }
     });
   }, 10);
+}
+
+// ФУНКЦИЯ СКАЧИВАНИЯ ВСЕГО ЧАТА
+function downloadFullChat(chatId) {
+  const chat = chats.find(c => c.id === chatId);
+  if (!chat) return;
+
+  // Формируем HTML-текст для документа
+  let htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${chat.title}</title></head><body>`;
+  htmlContent += `<h1>${chat.title}</h1>`;
+  
+  chat.messages.forEach(msg => {
+    // Время мы не храним в сообщениях, поэтому просто разделяем по ролям
+    const role = msg.sender === 'user' ? 'Вы' : 'chat-ai';
+    const formattedText = msg.text.replace(/\n/g, '<br>');
+    htmlContent += `<p><strong>${role}:</strong><br>${formattedText}</p><hr>`;
+  });
+  
+  htmlContent += `</body></html>`;
+
+  try {
+    const blob = htmlDocx.asBlob(htmlContent);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `chat-ai_${chat.title.replace(/[^a-zа-я0-9]/gi, '_')}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Ошибка создания DOCX:', err);
+    alert('Не удалось создать файл DOCX.');
+  }
 }
 
 function deleteChat(id) {
