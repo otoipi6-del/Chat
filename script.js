@@ -2,8 +2,7 @@
 // НАСТРОЙКИ И ДАННЫЕ ПРОВАЙДЕРОВ
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
-// ВСТАВЬ СЮДА URL СВОЕГО GAS ВЕБ-ПРИЛОЖЕНИЯ
-const GROQ_GAS_URL = "https://script.google.com/macros/s/AKfycbxP2fjnGgAPBezXQQpnVzLPJwjGVVB-POlL942mxAGxeBpYgkeroacf3FPNhXwBWuXu8A/exec"; 
+const GROQ_GAS_URL = "https://script.google.com/macros/s/ТВОЙ_ID/exec"; 
 
 const PROVIDER_MODELS = {
   groq: [
@@ -39,6 +38,7 @@ const clearAllBtn = document.getElementById('clearAllBtn');
 const attachBtn = document.getElementById('attachBtn');
 const fileInput = document.getElementById('fileInput');
 const micBtn = document.getElementById('micBtn');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
 
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
@@ -56,13 +56,11 @@ function updateModelList() {
   });
 }
 
-// УСТАНАВЛИВАЕМ GROQ И ЛУЧШУЮ МОДЕЛЬ ПО УМОЛЧАНИЮ
 if (providerSelect) {
-  providerSelect.value = "groq"; // Выбираем Groq
+  providerSelect.value = "groq"; 
   providerSelect.addEventListener('change', updateModelList);
-  updateModelList(); // Заполняем список моделями Groq
+  updateModelList(); 
   
-  // Выбираем первую модель (openai/gpt-oss-120b)
   if (modelSelect && modelSelect.options.length > 0) {
     modelSelect.selectedIndex = 0; 
   }
@@ -77,7 +75,6 @@ let chats = JSON.parse(localStorage.getItem('chat_history')) || [];
 function renderChatHistory() {
   if (!chatHistoryContainer) return;
   chatHistoryContainer.innerHTML = '';
-  
   const validChats = chats.filter(chat => chat.messages.length > 0);
   
   validChats.forEach(chat => {
@@ -137,7 +134,6 @@ function showContextMenu(e, chatId) {
 function deleteChat(id) {
   chats = chats.filter(c => c.id !== id);
   saveChats();
-  
   if (currentChatId === id) {
     currentChatId = null;
     clearMessagesUI();
@@ -266,10 +262,7 @@ if (clearAllBtn) {
 // РАБОТА С ФАЙЛАМИ И ГОЛОСОМ
 // ==========================================
 if (attachBtn && fileInput) {
-  attachBtn.addEventListener('click', () => {
-    fileInput.click();
-  });
-
+  attachBtn.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -282,7 +275,6 @@ if (attachBtn && fileInput) {
 
 if (micBtn) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  
   if (SpeechRecognition) {
     const recognition = new SpeechRecognition();
     recognition.lang = 'ru-RU';
@@ -300,19 +292,37 @@ if (micBtn) {
       messageInput.dispatchEvent(new Event('input'));
     });
 
-    recognition.addEventListener('end', () => {
-      micBtn.style.color = '';
-    });
-
+    recognition.addEventListener('end', () => micBtn.style.color = '');
     recognition.addEventListener('error', (event) => {
       alert('Ошибка распознавания речи: ' + event.error);
       micBtn.style.color = '';
     });
   } else {
-    micBtn.addEventListener('click', () => {
-      alert('Ваш браузер не поддерживает голосовой ввод.');
-    });
+    micBtn.addEventListener('click', () => alert('Ваш браузер не поддерживает голосовой ввод.'));
   }
+}
+
+// ==========================================
+// ПЕРЕКЛЮЧЕНИЕ ТЕМЫ
+// ==========================================
+if (themeToggleBtn) {
+  const currentTheme = localStorage.getItem('theme');
+  if (currentTheme === 'dark') {
+    document.body.classList.add('dark-theme');
+    themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+  }
+
+  themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    
+    if (document.body.classList.contains('dark-theme')) {
+      localStorage.setItem('theme', 'dark');
+      themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+      localStorage.setItem('theme', 'light');
+      themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+  });
 }
 
 // ==========================================
@@ -354,10 +364,7 @@ async function sendMessage() {
       response = await fetch(GROQ_GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          model: selectedModel,
-          messages: contextMessages
-        }),
+        body: JSON.stringify({ model: selectedModel, messages: contextMessages }),
       });
     } else {
       response = await fetch(PROXY_URL, {
@@ -446,16 +453,11 @@ async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
     alert('Текст скопирован в буфер обмена!');
-  } catch (err) {
-    alert('Не удалось скопировать текст.');
-  }
+  } catch (err) { alert('Не удалось скопировать текст.'); }
 }
 
 function downloadAsDocx(text) {
-  if (typeof htmlDocx === 'undefined') {
-    alert('Библиотека для создания DOCX не загружена.');
-    return;
-  }
+  if (typeof htmlDocx === 'undefined') { alert('Библиотека для создания DOCX не загружена.'); return; }
   const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><p>${text.replace(/\n/g, "</p><p>")}</p></body></html>`;
   try {
     const blob = htmlDocx.asBlob(htmlContent);
@@ -467,9 +469,7 @@ function downloadAsDocx(text) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  } catch (err) {
-    alert('Не удалось создать файл DOCX.');
-  }
+  } catch (err) { alert('Не удалось создать файл DOCX.'); }
 }
 
 function getCurrentTime() {
