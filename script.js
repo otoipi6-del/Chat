@@ -4,9 +4,19 @@
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
 
 const PROVIDER_MODELS = {
-  groq: ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'openai/gpt-oss-120b', 'qwen/qwen3-32b'],
-  deepseek: ['deepseek-chat', 'deepseek-reasoner'],
-  openrouter: ['openrouter/free', 'nvidia/nemotron-3-super-120b-a12b:free', 'google/gemma-4-31b-it:free']
+  groq: [
+    'openai/gpt-oss-120b', // Рабочая модель
+    'openai/gpt-oss-20b'   // Рабочая модель
+  ],
+  deepseek: [
+    'deepseek-chat',
+    'deepseek-reasoner'
+  ],
+  openrouter: [
+    'openrouter/free',
+    'nvidia/nemotron-3-super-120b-a12b:free',
+    'google/gemma-4-31b-it:free'
+  ]
 };
 
 // ==========================================
@@ -87,7 +97,6 @@ function renderChatHistory() {
   });
 }
 
-// Функция показа меню удаления
 function showContextMenu(e, chatId) {
   const existingMenu = document.querySelector('.chat-context-menu');
   if (existingMenu) existingMenu.remove();
@@ -232,7 +241,6 @@ if (newChatBtn) {
   });
 }
 
-// Кнопка "Очистить всю историю"
 if (clearAllBtn) {
   clearAllBtn.addEventListener('click', () => {
     if (confirm('Вы уверены, что хотите удалить все чаты?')) {
@@ -249,8 +257,6 @@ if (clearAllBtn) {
 // ==========================================
 // РАБОТА С ФАЙЛАМИ И ГОЛОСОМ
 // ==========================================
-
-// Прикрепление файла
 if (attachBtn && fileInput) {
   attachBtn.addEventListener('click', () => {
     fileInput.click();
@@ -259,7 +265,6 @@ if (attachBtn && fileInput) {
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Добавляем имя файла в поле ввода
       messageInput.value += ` [Файл: ${file.name}] `;
       messageInput.dispatchEvent(new Event('input'));
       messageInput.focus();
@@ -267,7 +272,6 @@ if (attachBtn && fileInput) {
   });
 }
 
-// Голосовой ввод (Web Speech API)
 if (micBtn) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   
