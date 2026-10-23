@@ -324,18 +324,19 @@ body {
   padding-bottom: 80px; 
 }
 
+/* --- ИСПРАВЛЕНИЕ ВЫРАВНИВАНИЯ --- */
 .message-wrapper {
   width: 100%;
   max-width: 768px; 
-  margin: 0 auto;
+  margin: 0 auto; /* Центрируем по горизонтали */
   display: flex;
   flex-direction: column;
   margin-bottom: 24px;
 }
 
-/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА, ОГРАНИЧЕННАЯ ШИРИНА) */
+/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (ПРИЖАТ К ПРАВОМУ КРАЮ КАРТОЧКИ) */
 .message-wrapper.user {
-  align-items: flex-end;
+  align-items: flex-end; /* Прижимаем контент вправо */
 }
 
 .message-wrapper.user .message-header {
@@ -344,8 +345,7 @@ body {
 
 .message-wrapper.user .message-body {
   align-items: flex-end;
-  /* ОГРАНИЧИВАЕМ ШИРИНУ, чтобы рамка была короче */
-  max-width: 70%; 
+  max-width: 70%; /* Ограничиваем ширину пузыря */
 }
 
 .message-wrapper.user .message-text {
@@ -356,11 +356,13 @@ body {
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s;
   word-wrap: break-word;
+  display: inline-block; /* Облегает текст */
+  max-width: 100%;
 }
 
-/* ОТВЕТ AI (СЛЕВА) */
+/* ОТВЕТ AI (ПРИЖАТ К ЛЕВОМУ КРАЮ КАРТОЧКИ) */
 .message-wrapper.ai {
-  align-items: flex-start;
+  align-items: flex-start; /* Прижимаем контент влево */
 }
 
 .message-wrapper.ai .message-header {
@@ -515,8 +517,7 @@ body {
   .top-box { padding: 8px 12px; }
   .bottom-box { padding: 0 8px; }
 
-  /* На мобильных делаем ширину еще меньше */
-  .message.user .message-body { max-width: 85%; }
+  .message-wrapper.user .message-body { max-width: 85%; }
   
   .message-text { font-size: 17px; }
   .message-input { font-size: 17px; }
