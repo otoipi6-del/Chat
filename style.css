@@ -424,7 +424,7 @@ body {
 }
 
 /* ==========================================
-   ПОЛЕ ВВОДА (ИСПРАВЛЕНО)
+   ПОЛЕ ВВОДА
    ========================================== */
 .input-container {
   padding: 16px 24px 24px;
@@ -436,7 +436,6 @@ body {
   transition: background-color 0.3s;
 }
 
-/* Контейнер выстраивает все элементы в ряд */
 .input-box {
   position: relative;
   width: 100%;
@@ -456,7 +455,6 @@ body {
   box-shadow: 0 4px 16px rgba(45, 109, 246, 0.15);
 }
 
-/* Кнопки (скрепка, микрофон, отправить) */
 .input-icon-btn {
   background: none;
   border: none;
@@ -469,16 +467,16 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
-  flex-shrink: 0; /* Кнопки не сжимаются */
+  flex-shrink: 0;
 }
 
 .input-icon-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
 /* Текстовая область занимает всё свободное место */
 .message-input {
-  flex: 1; /* Растягивается */
+  flex: 1; /* Растягивается на всё доступное пространство */
   border: none;
-  padding: 8px;
+  padding: 8px 4px; /* Уменьшили отступы, чтобы текст был шире */
   font-size: 16px;
   resize: none;
   min-height: 24px;
@@ -487,7 +485,7 @@ body {
   background: transparent;
   color: var(--text-primary);
   line-height: 1.5;
-  margin: 0 4px; /* Небольшой отступ от кнопок */
+  margin: 0 4px;
 }
 
 .send-btn {
@@ -539,13 +537,24 @@ body {
     overflow-y: auto;
   }
 
-  .input-container { padding: 10px 12px 16px; }
+  .input-container { 
+    padding: 8px 10px 12px; /* Уменьшили отступы контейнера на мобильных */
+  }
+  
+  /* Подстраиваем поле ввода под мобильный */
+  .input-box {
+    max-width: 100%;
+    padding: 6px 8px; /* Меньше внутренние отступы */
+  }
+
   .message.user .message-body { max-width: 95%; }
   .message-text { font-size: 17px; }
-  .message-input { font-size: 17px; }
+  .message-input { 
+    font-size: 17px; 
+    padding: 6px 4px; /* Текст будет шире */
+  }
   .sender-name { font-size: 15px; }
   .message-header { margin-bottom: 0px; }
   .welcome-screen h1 { font-size: 24px; }
   .welcome-screen p { font-size: 17px; }
-  .input-box { max-width: 100%; }
 }
