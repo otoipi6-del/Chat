@@ -78,22 +78,26 @@
       </div>
     </div>
 
-    <!-- Поле ввода (НОВАЯ СТРУКТУРА: Кнопки вынесены) -->
+    <!-- Поле ввода (КНОПКИ ВЫНЕСЕНЫ ЗА РАМКУ) -->
     <div class="input-container">
-      <div class="input-wrapper">
-        <!-- Скрепка слева -->
-        <input type="file" id="fileInput" style="display: none;">
-        <button class="input-icon-btn" title="Attach file" id="attachBtn"><i class="fas fa-paperclip"></i></button>
-        
-        <!-- Текстовое поле -->
+      
+      <!-- Левая кнопка (скрепка) -->
+      <input type="file" id="fileInput" style="display: none;">
+      <button class="input-icon-btn outside-btn" title="Attach file" id="attachBtn"><i class="fas fa-paperclip"></i></button>
+      
+      <!-- Сама рамка только для текста -->
+      <div class="input-box">
         <textarea class="message-input" id="messageInput" placeholder="Message chat-ai..." rows="1"></textarea>
-        
-        <!-- Кнопки справа -->
-        <button class="input-icon-btn" title="Voice input" id="micBtn"><i class="fas fa-microphone"></i></button>
-        <button class="send-btn" id="sendButton" disabled>
+      </div>
+      
+      <!-- Правая группа кнопок -->
+      <div class="right-buttons">
+        <button class="input-icon-btn outside-btn" title="Voice input" id="micBtn"><i class="fas fa-microphone"></i></button>
+        <button class="send-btn outside-btn" id="sendButton" disabled>
           <i class="fas fa-paper-plane"></i>
         </button>
       </div>
+
     </div>
   </div>
 
