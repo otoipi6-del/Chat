@@ -232,9 +232,9 @@ body {
   transition: background-color 0.3s;
 }
 
-/* --- ШАПКА (ИСПРАВЛЕНА) --- */
+/* --- ШАПКА (БАЛАНСИРОВКА) --- */
 .chat-header {
-  padding: 12px 24px;
+  padding: 10px 16px; /* Уменьшили отступы */
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -243,26 +243,25 @@ body {
   flex-shrink: 0;
   z-index: 10;
   width: 100%;
-  gap: 12px;
+  gap: 8px;
   transition: background-color 0.3s, border-color 0.3s;
 }
 
 .chat-header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-shrink: 0; /* Не даем сжиматься левой части */
+  gap: 8px;
+  flex-shrink: 0; 
 }
 
-/* Кнопки в шапке */
 .hamburger-btn, .theme-toggle-btn {
   background: none;
   border: 1px solid transparent;
-  font-size: 20px;
+  font-size: 18px; /* Чуть меньше иконки */
   color: var(--text-primary);
   cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,37 +274,34 @@ body {
   color: var(--primary);
 }
 
-/* Название */
 .chat-title {
   font-weight: 700; 
-  font-size: 20px;  
+  font-size: 18px;  
   white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--text-primary);
-  max-width: 200px; /* Ограничиваем ширину, чтобы не прижимался */
+  max-width: 120px; /* Сильно урезали, чтобы не мешал */
 }
 
-/* Правая часть шапки */
 .chat-header-right {
   display: flex;
   align-items: center;
-  gap: 8px; /* Чуть уменьшили отступ */
-  flex-shrink: 1; /* Разрешаем сжиматься */
+  gap: 6px; /* Уменьшили промежутки */
+  flex-shrink: 1; 
   min-width: 0;
 }
 
-/* Выпадающие списки */
 .provider-select {
-  padding: 6px 8px;
-  border-radius: 8px;
+  padding: 4px 6px; /* Уменьшили */
+  border-radius: 6px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 12px; /* Чуть меньше шрифт */
   cursor: pointer;
   outline: none;
-  max-width: 130px; /* Уменьшили, чтобы влезло */
+  max-width: 110px; /* Сильно урезали */
   text-overflow: ellipsis;
   transition: border-color 0.2s, background-color 0.3s;
 }
@@ -525,14 +521,11 @@ body {
   
   .sidebar.hidden { transform: translateX(-100%); }
 
-  .chat-header { padding: 10px 12px; gap: 6px; }
-  .chat-header-right { gap: 6px; }
-  .provider-select { max-width: 80px; font-size: 11px; padding: 4px; }
-  
-  .chat-title { 
-    font-size: 17px; 
-    max-width: 100px; /* На телефоне урезаем сильнее */
-  }
+  .chat-header { padding: 8px 10px; gap: 4px; }
+  .chat-header-right { gap: 4px; }
+  .provider-select { max-width: 70px; font-size: 10px; padding: 2px 4px; }
+  .chat-title { font-size: 15px; max-width: 80px; }
+  .hamburger-btn, .theme-toggle-btn { padding: 4px; font-size: 16px; }
 
   .messages-container {
     padding: 12px;
