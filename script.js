@@ -392,40 +392,45 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ (С ПРИНУДИТЕЛЬНЫМ CSS)
+// ФУНКЦИИ ОТОБРАЖЕНИЯ (ИСПРАВЛЕНО)
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
   
   const wrapper = document.createElement('div');
-  // Принудительно задаем стили выравнивания прямо в JS, чтобы CSS не мешал
+  wrapper.style.display = 'flex';
+  wrapper.style.flexDirection = 'column';
+  wrapper.style.width = '100%';
+  wrapper.style.maxWidth = '768px'; // Ограничиваем ширину карточки
+  wrapper.style.margin = '0 auto 24px auto'; // Центрируем
+  wrapper.style.boxSizing = 'border-box';
+
+  // ЖЕСТКО ЗАДАЕМ ВЫРАВНИВАНИЕ В JS
   if (sender === 'user') {
-    wrapper.style.display = 'flex';
-    wrapper.style.flexDirection = 'column';
-    wrapper.style.alignItems = 'flex-end'; // Прижимаем вправо
-    wrapper.style.width = '100%';
-    wrapper.style.marginBottom = '24px';
+    wrapper.style.alignItems = 'flex-end'; // Вправо
   } else {
-    wrapper.style.display = 'flex';
-    wrapper.style.flexDirection = 'column';
-    wrapper.style.alignItems = 'flex-start'; // Прижимаем влево
-    wrapper.style.width = '100%';
-    wrapper.style.marginBottom = '24px';
+    wrapper.style.alignItems = 'flex-start'; // Влево
   }
   
   const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${sender}`;
+  messageDiv.style.display = 'flex';
+  messageDiv.style.flexDirection = 'column';
   
-  // Для самого сообщения задаем ширину и стили
+  // Стили для пузыря
   if (sender === 'user') {
-      messageDiv.style.maxWidth = '85%'; // Ограничиваем ширину пузыря
+      messageDiv.style.alignItems = 'flex-end';
+      messageDiv.style.maxWidth = '75%'; // Ограничиваем ширину вопроса
       messageDiv.style.backgroundColor = 'var(--user-message-bg)';
       messageDiv.style.padding = '12px 16px';
-      messageDiv.style.borderRadius = '16px'; // Закругляем со всех сторон
+      messageDiv.style.borderRadius = '16px'; // Все углы скруглены
       messageDiv.style.boxShadow = 'var(--shadow-sm)';
       messageDiv.style.wordWrap = 'break-word';
+      messageDiv.style.color = 'var(--text-primary)';
   } else {
+      messageDiv.style.alignItems = 'flex-start';
       messageDiv.style.maxWidth = '100%';
+      messageDiv.style.backgroundColor = 'transparent';
+      messageDiv.style.color = 'var(--text-primary)';
   }
 
   const isAI = sender === 'ai';
@@ -434,20 +439,20 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
   let actionButtonsHtml = '';
   if (isAI) {
     actionButtonsHtml = `
-      <div class="message-actions">
-        <button class="action-btn copy-btn" title="Копировать"><i class="fas fa-copy"></i> Копировать</button>
-        <button class="action-btn docx-btn" title="Скачать DOCX"><i class="fas fa-file-word"></i> Скачать DOCX</button>
+      <div class="message-actions" style="display: flex; gap: 8px; margin-top: 8px;">
+        <button class="action-btn copy-btn" title="Копировать" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: var(--shadow-sm);"><i class="fas fa-copy"></i> Копировать</button>
+        <button class="action-btn docx-btn" title="Скачать DOCX" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: var(--shadow-sm);"><i class="fas fa-file-word"></i> Скачать DOCX</button>
       </div>
     `;
   }
 
   messageDiv.innerHTML = `
-    <div class="message-header">
-      <div class="sender-name">${senderName}</div>
-      <div class="message-time">${getCurrentTime()}</div>
+    <div class="message-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px; width: 100%; ${sender === 'user' ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}">
+      <div class="sender-name" style="font-weight: 700; font-size: 15px; color: var(--text-primary);">${senderName}</div>
+      <div class="message-time" style="font-size: 13px; color: var(--text-secondary);">${getCurrentTime()}</div>
     </div>
-    <div class="message-body">
-      <div class="message-text">${formattedText}</div>
+    <div class="message-body" style="display: flex; flex-direction: column; width: 100%;">
+      <div class="message-text" style="line-height: 1.65; word-wrap: break-word; font-size: 16px;">${formattedText}</div>
       ${actionButtonsHtml}
     </div>
   `;
