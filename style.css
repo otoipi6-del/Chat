@@ -319,13 +319,11 @@ body {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  /* ВАЖНО: Убираем центрирование, чтобы сообщения прижимались к краям */
   align-items: stretch; 
   overscroll-behavior-y: contain; 
   padding-bottom: 80px; 
 }
 
-/* Обертка для каждого сообщения */
 .message-wrapper {
   width: 100%;
   max-width: 768px; 
@@ -335,7 +333,7 @@ body {
   margin-bottom: 24px;
 }
 
-/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА) */
+/* ВОПРОС ПОЛЬЗОВАТЕЛЯ (СПРАВА, ОГРАНИЧЕННАЯ ШИРИНА) */
 .message-wrapper.user {
   align-items: flex-end;
 }
@@ -346,15 +344,14 @@ body {
 
 .message-wrapper.user .message-body {
   align-items: flex-end;
-  max-width: 85%;
+  /* ОГРАНИЧИВАЕМ ШИРИНУ, чтобы рамка была короче */
+  max-width: 70%; 
 }
 
 .message-wrapper.user .message-text {
   background-color: var(--user-message-bg);
   padding: 12px 16px;
   border-radius: 16px;
-  /* Закругляем все углы, чтобы не было острых краев */
-  border-radius: 16px; 
   color: var(--text-primary);
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s;
@@ -518,7 +515,9 @@ body {
   .top-box { padding: 8px 12px; }
   .bottom-box { padding: 0 8px; }
 
-  .message.user .message-body { max-width: 95%; }
+  /* На мобильных делаем ширину еще меньше */
+  .message.user .message-body { max-width: 85%; }
+  
   .message-text { font-size: 17px; }
   .message-input { font-size: 17px; }
   .sender-name { font-size: 15px; }
