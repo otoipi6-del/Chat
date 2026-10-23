@@ -23,6 +23,10 @@ const sidebar = document.getElementById('sidebar');
 const openSidebarBtn = document.getElementById('openSidebarBtn');
 const newChatBtn = document.getElementById('newChatBtn');
 const chatHistoryContainer = document.getElementById('chatHistory');
+const clearAllBtn = document.getElementById('clearAllBtn');
+const attachBtn = document.getElementById('attachBtn');
+const fileInput = document.getElementById('fileInput');
+const micBtn = document.getElementById('micBtn');
 
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
@@ -55,22 +59,73 @@ let chats = JSON.parse(localStorage.getItem('chat_history')) || [];
 function renderChatHistory() {
   if (!chatHistoryContainer) return;
   chatHistoryContainer.innerHTML = '';
+  
   const validChats = chats.filter(chat => chat.messages.length > 0);
   
   validChats.forEach(chat => {
     const wrapper = document.createElement('div');
     wrapper.className = `chat-item-wrapper ${chat.id === currentChatId ? 'active' : ''}`;
     wrapper.dataset.id = chat.id;
+    
     wrapper.innerHTML = `
       <span class="chat-item-text">${chat.title}</span>
       <button class="chat-item-menu"><i class="fas fa-ellipsis-h"></i></button>
     `;
+    
     wrapper.addEventListener('click', (e) => {
-      if (e.target.closest('.chat-item-menu')) return;
+      if (e.target.closest('.chat-item-menu')) return; 
       loadChat(chat.id);
     });
+
+    const menuBtn = wrapper.querySelector('.chat-item-menu');
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showContextMenu(e, chat.id);
+    });
+
     chatHistoryContainer.appendChild(wrapper);
   });
+}
+
+// Функция показа меню удаления
+function showContextMenu(e, chatId) {
+  const existingMenu = document.querySelector('.chat-context-menu');
+  if (existingMenu) existingMenu.remove();
+
+  const menu = document.createElement('div');
+  menu.className = 'chat-context-menu';
+  menu.innerHTML = `<button id="deleteChatBtn"><i class="fas fa-trash"></i> Удалить</button>`;
+  
+  const rect = e.target.getBoundingClientRect();
+  menu.style.top = `${rect.bottom + window.scrollY}px`;
+  menu.style.left = `${rect.left - 100 + window.scrollX}px`;
+
+  document.body.appendChild(menu);
+
+  document.getElementById('deleteChatBtn').addEventListener('click', () => {
+    deleteChat(chatId);
+    menu.remove();
+  });
+
+  setTimeout(() => {
+    document.addEventListener('click', function closeMenu(ev) {
+      if (!menu.contains(ev.target)) {
+        menu.remove();
+        document.removeEventListener('click', closeMenu);
+      }
+    });
+  }, 10);
+}
+
+function deleteChat(id) {
+  chats = chats.filter(c => c.id !== id);
+  saveChats();
+  
+  if (currentChatId === id) {
+    currentChatId = null;
+    clearMessagesUI();
+  }
+  renderChatHistory();
 }
 
 function loadChat(id) {
@@ -79,9 +134,7 @@ function loadChat(id) {
   currentChatId = id;
   renderChatHistory();
   clearMessagesUI();
-  chat.messages.forEach(msg => {
-    addMessageToUI(msg.sender, msg.text, msg.senderName, false);
-  });
+  chat.messages.forEach(msg => addMessageToUI(msg.sender, msg.text, msg.senderName, false));
   if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
   if (window.innerWidth <= 768) closeSidebar();
 }
@@ -139,62 +192,116 @@ if (messageInput && sendButton) {
 // ==========================================
 // БОКОВАЯ ПАНЕЛЬ (САЙДБАР)
 // ==========================================
-
-// Явно задаем функции открытия и закрытия
 window.openSidebar = function() {
   if (!sidebar || !openSidebarBtn) return;
   sidebar.classList.remove('hidden');
-  // Принудительно ставим иконку крестика
   openSidebarBtn.innerHTML = '<i class="fas fa-times" style="color: var(--primary);"></i>';
 }
 
 window.closeSidebar = function() {
   if (!sidebar || !openSidebarBtn) return;
   sidebar.classList.add('hidden');
-  // Принудительно ставим иконку гамбургера
   openSidebarBtn.innerHTML = '<i class="fas fa-bars"></i>';
 }
 
-// Обработчик клика по кнопке
 if (openSidebarBtn) {
   openSidebarBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (sidebar.classList.contains('hidden')) {
-      window.openSidebar();
-    } else {
-      window.closeSidebar();
-    }
+    if (sidebar.classList.contains('hidden')) openSidebar();
+    else closeSidebar();
   });
 }
 
-// Закрытие при клике вне сайдбара
 document.addEventListener('click', (e) => {
   if (!sidebar || !openSidebarBtn) return;
   if (!sidebar.classList.contains('hidden') && 
       !sidebar.contains(e.target) && 
       !openSidebarBtn.contains(e.target)) {
-    window.closeSidebar();
+    closeSidebar();
   }
 });
 
-// Кнопка "New Chat"
 if (newChatBtn) {
   newChatBtn.addEventListener('click', () => {
     currentChatId = null;
     clearMessagesUI();
     renderChatHistory();
-    if (window.innerWidth <= 768) window.closeSidebar();
+    if (window.innerWidth <= 768) closeSidebar();
     if (messageInput) messageInput.focus();
   });
 }
 
-// Заглушки
-const attachBtn = document.getElementById('attachBtn');
-if (attachBtn) attachBtn.addEventListener('click', () => alert('Функция прикрепления файлов будет добавлена.'));
+// Кнопка "Очистить всю историю"
+if (clearAllBtn) {
+  clearAllBtn.addEventListener('click', () => {
+    if (confirm('Вы уверены, что хотите удалить все чаты?')) {
+      chats = [];
+      currentChatId = null;
+      saveChats();
+      renderChatHistory();
+      clearMessagesUI();
+      if (window.innerWidth <= 768) closeSidebar();
+    }
+  });
+}
 
-const micBtn = document.getElementById('micBtn');
-if (micBtn) micBtn.addEventListener('click', () => alert('Функция голосового ввода будет добавлена.'));
+// ==========================================
+// РАБОТА С ФАЙЛАМИ И ГОЛОСОМ
+// ==========================================
+
+// Прикрепление файла
+if (attachBtn && fileInput) {
+  attachBtn.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Добавляем имя файла в поле ввода
+      messageInput.value += ` [Файл: ${file.name}] `;
+      messageInput.dispatchEvent(new Event('input'));
+      messageInput.focus();
+    }
+  });
+}
+
+// Голосовой ввод (Web Speech API)
+if (micBtn) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ru-RU';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    micBtn.addEventListener('click', () => {
+      recognition.start();
+      micBtn.style.color = 'red';
+    });
+
+    recognition.addEventListener('result', (event) => {
+      const speechToText = event.results[0][0].transcript;
+      messageInput.value += (messageInput.value ? ' ' : '') + speechToText;
+      messageInput.dispatchEvent(new Event('input'));
+    });
+
+    recognition.addEventListener('end', () => {
+      micBtn.style.color = '';
+    });
+
+    recognition.addEventListener('error', (event) => {
+      alert('Ошибка распознавания речи: ' + event.error);
+      micBtn.style.color = '';
+    });
+  } else {
+    micBtn.addEventListener('click', () => {
+      alert('Ваш браузер не поддерживает голосовой ввод.');
+    });
+  }
+}
 
 // ==========================================
 // ОСНОВНАЯ ЛОГИКА ЧАТА
@@ -352,8 +459,3 @@ function getCurrentTime() {
 // ==========================================
 renderChatHistory();
 clearMessagesUI();
-
-// Принудительно ставим иконку гамбургера при загрузке
-if (openSidebarBtn) {
-  openSidebarBtn.innerHTML = '<i class="fas fa-bars"></i>';
-}
