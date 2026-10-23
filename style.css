@@ -332,21 +332,21 @@ body {
   margin-bottom: 24px;
 }
 
-/* ВЫРАВНИВАНИЕ ВОПРОСА ВПРАВО */
-.message.user {
-  align-items: flex-end; 
+/* ПРИНУДИТЕЛЬНОЕ ВЫРАВНИВАНИЕ ВПРАВО */
+.message-wrapper.user {
+  align-items: flex-end;
 }
 
-.message.user .message-header {
+.message-wrapper.user .message-header {
   justify-content: flex-end;
 }
 
-.message.user .message-body {
+.message-wrapper.user .message-body {
   align-items: flex-end;
   max-width: 85%;
 }
 
-.message.user .message-text {
+.message-wrapper.user .message-text {
   background-color: var(--user-message-bg);
   padding: 12px 16px;
   border-radius: 16px;
@@ -354,14 +354,30 @@ body {
   color: var(--text-primary);
   box-shadow: var(--shadow-sm);
   transition: background-color 0.3s;
-  word-wrap: break-word; /* Чтобы длинный текст не вылезал */
+  word-wrap: break-word; 
 }
 
-.message.ai { align-items: flex-start; }
-.message.ai .message-header { justify-content: flex-start; }
-.message.ai .message-body { align-items: flex-start; max-width: 100%; }
-.message.ai .message-text { background-color: transparent; padding: 0; color: var(--text-primary); }
+/* ПРИНУДИТЕЛЬНОЕ ВЫРАВНИВАНИЕ ВЛЕВО */
+.message-wrapper.ai {
+  align-items: flex-start;
+}
 
+.message-wrapper.ai .message-header {
+  justify-content: flex-start;
+}
+
+.message-wrapper.ai .message-body {
+  align-items: flex-start;
+  max-width: 100%;
+}
+
+.message-wrapper.ai .message-text {
+  background-color: transparent;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+/* Общие стили для сообщений */
 .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); text-align: center; }
 .welcome-icon { font-size: 64px; color: var(--primary); margin-bottom: 20px; }
 .welcome-screen h1 { font-size: 28px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
@@ -385,7 +401,7 @@ body {
 @keyframes typing-animation { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
 
 /* ==========================================
-   ПОЛЕ ВВОДА (ИСПРАВЛЕНО: ВЕРХНЯЯ РАМКА + НИЖНИЕ КНОПКИ)
+   ПОЛЕ ВВОДА (ДВЕ РАМКИ)
    ========================================== */
 .input-container {
   padding: 16px 24px 24px;
@@ -395,16 +411,15 @@ body {
   align-items: center;
   flex-shrink: 0;
   width: 100%;
-  gap: 8px; /* Отступ между верхней рамкой и нижними кнопками */
+  gap: 8px;
   transition: background-color 0.3s;
 }
 
-/* Верхняя рамка (с текстом) */
 .top-box {
   width: 100%;
   max-width: 768px;
   border: 2px solid var(--border-color);
-  border-radius: 24px; /* Полностью скругленные углы */
+  border-radius: 24px; 
   padding: 12px 16px;
   background-color: var(--bg-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -416,14 +431,13 @@ body {
   box-shadow: 0 4px 16px rgba(45, 109, 246, 0.15);
 }
 
-/* Нижняя панель (с кнопками) - БЕЗ ФОНА И РАМКИ */
 .bottom-box {
   width: 100%;
   max-width: 768px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px; /* Небольшой отступ, чтобы кнопки не прилипали к краям */
+  padding: 0 12px; 
 }
 
 .message-input {
