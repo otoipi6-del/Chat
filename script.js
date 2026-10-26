@@ -483,7 +483,7 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ФУНКЦИИ ОТОБРАЖЕНИЯ
+// ФУНКЦИИ ОТОБРАЖЕНИЯ (С ПОДДЕРЖКОЙ БЛОКОВ КОДА)
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
   if (!messagesContainer || !typingIndicator) return;
@@ -502,7 +502,8 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
   messageDiv.className = 'message-body'; 
   
   const isAI = sender === 'ai';
-  const formattedText = text.replace(/\n/g, '<br>');
+  // ВЫЗЫВАЕМ НОВУЮ ФУНКЦИЮ ДЛЯ ФОРМАТИРОВАНИЯ
+  const formattedText = formatMessageText(text);
 
   let actionButtonsHtml = '';
   if (isAI) {
@@ -524,6 +525,15 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
     const docxBtn = messageDiv.querySelector('.docx-btn');
     copyBtn.addEventListener('click', () => copyToClipboard(text));
     docxBtn.addEventListener('click', () => downloadAsDocx(text));
+    
+    // Находим все кнопки копирования кода и добавляем обработчики
+    const codeCopyBtns = messageDiv.querySelectorAll('.code-copy-btn');
+    codeCopyBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const code = this.closest('.code-block').querySelector('code').innerText;
+            copyToClipboard(code);
+        });
+    });
   }
 
   wrapper.appendChild(headerDiv);
@@ -531,6 +541,30 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
   
   messagesContainer.insertBefore(wrapper, typingIndicator);
   if (scroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// НОВАЯ ФУНКЦИЯ ДЛЯ ФОРМАТИРОВАНИЯ ТЕКСТА И КОДА
+function formatMessageText(text) {
+  // Регулярное выражение для поиска блоков кода ```...```
+  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+  
+  let result = text.replace(codeBlockRegex, (match, lang, code) => {
+    // Экранируем HTML-теги внутри кода, чтобы они не ломали верстку
+    const escapedCode = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    return `
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">${lang || 'code'}</span>
+          <button class="code-copy-btn"><i class="fas fa-copy"></i> Копировать</button>
+        </div>
+        <pre><code>${escapedCode}</code></pre>
+      </div>
+    `;
+  });
+
+  // Заменяем переносы строк на <br> для остального текста
+  return result.replace(/\n/g, '<br>');
 }
 
 // ==========================================
