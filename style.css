@@ -386,12 +386,15 @@ body {
 .message-wrapper.ai .message-body {
   align-items: flex-start;
   max-width: 100%;
+  width: 100%; /* Жестко задаем ширину */
 }
 
 .message-wrapper.ai .message-text {
   background-color: transparent;
   padding: 0;
   color: var(--text-primary);
+  width: 100%; /* Текст занимает всю ширину body */
+  word-wrap: break-word;
 }
 
 /* Общие стили для сообщений */
@@ -404,22 +407,23 @@ body {
 .sender-name { font-weight: 700; font-size: 15px; color: var(--text-primary); }
 .message-time { font-size: 13px; color: var(--text-secondary); }
 .message-body { display: flex; flex-direction: column; }
-.message-text { line-height: 1.65; word-wrap: break-word; font-size: 16px; }
+.message-text { line-height: 1.65; font-size: 16px; }
 
 .message-actions { display: flex; gap: 8px; margin-top: 8px; }
 .action-btn { background: var(--bg-color); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; transition: all 0.2s; box-shadow: var(--shadow-sm); }
 .action-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
 /* ==========================================
-   СТИЛИ ДЛЯ БЛОКОВ КОДА (СЕРО-ГОЛУБЫЕ)
+   СТИЛИ ДЛЯ БЛОКОВ КОДА (ФИКСАЦИЯ)
    ========================================== */
 .code-block {
-  background-color: #f0f4f8; /* Очень светлый серо-голубой */
+  background-color: #f0f4f8; 
   border-radius: 8px;
   margin: 12px 0;
-  overflow: hidden; /* Скрываем всё, что вылезает за пределы */
-  border: 1px solid #cbd5e1; /* Серо-голубая рамка */
-  max-width: 100%; /* Ограничиваем ширину */
+  overflow: hidden; 
+  border: 1px solid #cbd5e1; 
+  max-width: 100%; /* Не вылезаем за пределы родителя */
+  width: 100%; /* Растягиваем на всю ширину родителя */
   box-sizing: border-box;
 }
 
@@ -427,23 +431,22 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #e2e8f0; /* Серо-голубой для шапки */
+  background-color: #e2e8f0; 
   padding: 6px 12px;
   border-bottom: 1px solid #cbd5e1;
 }
 
 .code-lang {
-  color: #475569; /* Темно-серый текст для языка */
+  color: #475569; 
   font-size: 12px;
   font-family: monospace;
   text-transform: uppercase;
 }
 
-/* Кнопка копирования кода (белая с серой рамкой) */
 .code-copy-btn {
   background: #ffffff; 
-  border: 1px solid #94a3b8; /* Серая рамка */
-  color: #334155; /* Темно-серый текст */
+  border: 1px solid #94a3b8; 
+  color: #334155; 
   font-size: 12px;
   cursor: pointer;
   display: flex;
@@ -463,16 +466,17 @@ body {
 .code-block pre {
   margin: 0;
   padding: 12px;
-  overflow-x: auto; /* Добавляем горизонтальную прокрутку, если код длинный */
+  overflow-x: auto; /* Горизонтальный скролл, если код шире */
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 .code-block code {
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
-  color: #1e293b; /* Темно-серый текст для кода */
+  color: #1e293b; 
   line-height: 1.5;
-  white-space: pre; /* Сохраняем форматирование */
+  white-space: pre; /* Сохраняем форматирование кода */
 }
 
 /* ==========================================
