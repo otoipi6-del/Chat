@@ -2,7 +2,8 @@
 // НАСТРОЙКИ И ДАННЫЕ ПРОВАЙДЕРОВ
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
-const GROQ_GAS_URL = "https://script.google.com/macros/s/AKfycbxP2fjnGgAPBezXQQpnVzLPJwjGVVB-POlL942mxAGxeBpYgkeroacf3FPNhXwBWuXu8A/exec"; // НЕ ЗАБУДЬ ВСТАВИТЬ СВОЙ URL!
+const GROQ_GAS_URL = "https://script.google.com/macros/s/ТВОЙ_ID/exec"; // НЕ ЗАБУДЬ ВСТАВИТЬ СВОЙ URL!
+
 const PROVIDER_MODELS = {
   groq: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'],
   deepseek: ['deepseek-chat', 'deepseek-reasoner'],
@@ -521,7 +522,7 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ (POLLINATIONS С МОДЕЛЬЮ FLUX)
+// ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ (TOGETHER AI ЧЕРЕЗ WORKER)
 // ==========================================
 async function generateImage(prompt) {
   if (welcomeScreen) welcomeScreen.style.display = 'none';
@@ -542,21 +543,37 @@ async function generateImage(prompt) {
   if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    // Кодируем текст для URL
-    const encodedPrompt = encodeURIComponent(prompt);
-    // Используем модель flux для лучшего качества
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=flux&nologo=true&width=768&height=768`;
-    
-    // Создаем картинку, чтобы проверить, загрузилась ли она
-    const img = new Image();
-    img.src = imageUrl;
-    
-    // Ждем загрузки картинки (с таймаутом)
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = () => reject(new Error("Не удалось загрузить изображение"));
-      setTimeout(() => reject(new Error("Превышено время ожидания")), 60000); // 60 секунд
+    // Отправляем запрос на наш Worker, который добавит ключ Together AI
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        provider: 'together',
+        prompt: prompt
+      }),
     });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `Ошибка сервера: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Together AI возвращает URL картинки в data.choices[0].image_urls[0] или похожем формате
+    // В зависимости от версии API, но чаще всего это массив
+    let imageUrl = null;
+    if (data.data && data.data[0] && data.data[0].url) {
+        imageUrl = data.data[0].url;
+    } else if (data.choices && data.choices[0] && data.choices[0].image_urls) {
+        imageUrl = data.choices[0].image_urls[0];
+    } else if (data.image_url) {
+        imageUrl = data.image_url;
+    }
+
+    if (!imageUrl) {
+        throw new Error("Не удалось получить URL картинки от Together AI");
+    }
 
     if (typingIndicator) typingIndicator.style.display = 'none';
     
