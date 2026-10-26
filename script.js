@@ -20,7 +20,6 @@ const typingIndicator = document.getElementById('typingIndicator');
 const providerSelect = document.getElementById('providerSelect');
 const modelSelect = document.getElementById('modelSelect');
 const welcomeScreen = document.getElementById('welcomeScreen');
-const welcomeText = document.getElementById('welcomeText');
 const sidebar = document.getElementById('sidebar');
 const openSidebarBtn = document.getElementById('openSidebarBtn');
 const newChatBtn = document.getElementById('newChatBtn');
@@ -30,12 +29,10 @@ const attachBtn = document.getElementById('attachBtn');
 const fileInput = document.getElementById('fileInput');
 const micBtn = document.getElementById('micBtn');
 const themeToggleBtn = document.getElementById('themeToggleBtn');
-const modeSwitcher = document.getElementById('modeSwitcher');
 
 // Переменные для управления запросом
 let isGenerating = false;
 let abortController = null;
-let currentMode = 'chat'; // 'chat' или 'image'
 
 // ==========================================
 // ЛОГИКА ВЫПАДАЮЩИХ СПИСКОВ
@@ -61,36 +58,6 @@ if (providerSelect) {
   if (modelSelect && modelSelect.options.length > 0) {
     modelSelect.selectedIndex = 0; 
   }
-}
-
-// ==========================================
-// ПЕРЕКЛЮЧЕНИЕ РЕЖИМОВ (ЧАТ / КАРТИНКИ)
-// ==========================================
-if (modeSwitcher) {
-  modeSwitcher.addEventListener('click', (e) => {
-    if (e.target.classList.contains('mode-btn')) {
-      const mode = e.target.dataset.mode;
-      
-      if (mode === currentMode) return;
-      
-      currentMode = mode;
-      
-      modeSwitcher.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-      e.target.classList.add('active');
-      
-      if (currentMode === 'image') {
-        messageInput.placeholder = "Опишите картинку, которую хотите создать...";
-        welcomeText.textContent = "Опишите картинку, и я её нарисую!";
-      } else {
-        messageInput.placeholder = "Message chat-ai...";
-        welcomeText.textContent = "Чем я могу вам помочь?";
-      }
-      
-      messageInput.value = '';
-      messageInput.style.height = 'auto';
-      sendButton.disabled = true;
-    }
-  });
 }
 
 // ==========================================
@@ -425,13 +392,6 @@ async function sendMessage() {
   const messageText = messageInput.value.trim();
   if (messageText === '') return;
 
-  // Если выбран режим "Картинки"
-  if (currentMode === 'image') {
-    await generateImage(messageText);
-    return;
-  }
-
-  // ИНАЧЕ - ОБЫЧНЫЙ ЧАТ
   if (!currentChatId) {
     currentChatId = Date.now().toString();
     chats.unshift({ id: currentChatId, title: 'Новый чат', messages: [] });
@@ -522,76 +482,6 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ (TOGETHER AI ЧЕРЕЗ WORKER)
-// ==========================================
-async function generateImage(prompt) {
-  if (welcomeScreen) welcomeScreen.style.display = 'none';
-  
-  // Добавляем сообщение пользователя
-  addMessageToUI('user', prompt, 'Вы');
-  
-  // Очищаем поле ввода
-  messageInput.value = '';
-  localStorage.removeItem('draftMessage');
-  messageInput.style.height = 'auto';
-  
-  // Показываем индикатор загрузки
-  isGenerating = true;
-  sendButton.disabled = true;
-  sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-  if (typingIndicator) typingIndicator.style.display = 'flex';
-  if (messagesContainer) messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  try {
-    // Отправляем запрос на наш Worker, который добавит ключ Together AI
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        provider: 'together',
-        prompt: prompt
-      }),
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error || `Ошибка сервера: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Together AI возвращает URL картинки в data.choices[0].image_urls[0] или похожем формате
-    // В зависимости от версии API, но чаще всего это массив
-    let imageUrl = null;
-    if (data.data && data.data[0] && data.data[0].url) {
-        imageUrl = data.data[0].url;
-    } else if (data.choices && data.choices[0] && data.choices[0].image_urls) {
-        imageUrl = data.choices[0].image_urls[0];
-    } else if (data.image_url) {
-        imageUrl = data.image_url;
-    }
-
-    if (!imageUrl) {
-        throw new Error("Не удалось получить URL картинки от Together AI");
-    }
-
-    if (typingIndicator) typingIndicator.style.display = 'none';
-    
-    // Добавляем сообщение с картинкой
-    addImageToUI('ai', imageUrl, 'chat-ai');
-    
-  } catch (error) {
-    if (typingIndicator) typingIndicator.style.display = 'none';
-    addMessageToUI('ai', `Не удалось создать картинку: ${error.message}.`, 'chat-ai');
-  } finally {
-    isGenerating = false;
-    sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
-    sendButton.style.backgroundColor = ''; 
-    sendButton.disabled = messageInput.value.trim() === '';
-  }
-}
-
-// ==========================================
 // ФУНКЦИИ ОТОБРАЖЕНИЯ
 // ==========================================
 function addMessageToUI(sender, text, senderName, scroll = true) {
@@ -642,38 +532,6 @@ function addMessageToUI(sender, text, senderName, scroll = true) {
         });
     });
   }
-
-  wrapper.appendChild(headerDiv);
-  wrapper.appendChild(messageDiv);
-  
-  messagesContainer.insertBefore(wrapper, typingIndicator);
-  if (scroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-// ФУНКЦИЯ ДЛЯ ДОБАВЛЕНИЯ КАРТИНКИ В ЧАТ
-function addImageToUI(sender, imageUrl, senderName, scroll = true) {
-  if (!messagesContainer || !typingIndicator) return;
-  
-  const wrapper = document.createElement('div');
-  wrapper.className = `message-wrapper ${sender}`;
-  
-  const headerDiv = document.createElement('div');
-  headerDiv.className = 'message-header';
-  headerDiv.innerHTML = `
-    <div class="sender-name">${senderName}</div>
-    <div class="message-time">${getCurrentTime()}</div>
-  `;
-
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'message-body'; 
-  
-  // Вставляем картинку
-  messageDiv.innerHTML = `
-    <img src="${imageUrl}" class="generated-image" alt="Сгенерированное изображение">
-    <div class="message-actions">
-      <a href="${imageUrl}" download="generated_image.png" class="action-btn"><i class="fas fa-download"></i> Скачать</a>
-    </div>
-  `;
 
   wrapper.appendChild(headerDiv);
   wrapper.appendChild(messageDiv);
