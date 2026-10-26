@@ -3,7 +3,6 @@
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
 const GROQ_GAS_URL = "https://script.google.com/macros/s/AKfycbxP2fjnGgAPBezXQQpnVzLPJwjGVVB-POlL942mxAGxeBpYgkeroacf3FPNhXwBWuXu8A/exec"; // НЕ ЗАБУДЬ ВСТАВИТЬ СВОЙ URL!
-
 const PROVIDER_MODELS = {
   groq: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'],
   deepseek: ['deepseek-chat', 'deepseek-reasoner'],
@@ -71,16 +70,13 @@ if (modeSwitcher) {
     if (e.target.classList.contains('mode-btn')) {
       const mode = e.target.dataset.mode;
       
-      // Если уже в этом режиме, ничего не делаем
       if (mode === currentMode) return;
       
       currentMode = mode;
       
-      // Обновляем активную кнопку
       modeSwitcher.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
       e.target.classList.add('active');
       
-      // Меняем placeholder и приветствие
       if (currentMode === 'image') {
         messageInput.placeholder = "Опишите картинку, которую хотите создать...";
         welcomeText.textContent = "Опишите картинку, и я её нарисую!";
@@ -89,7 +85,6 @@ if (modeSwitcher) {
         welcomeText.textContent = "Чем я могу вам помочь?";
       }
       
-      // Очищаем поле ввода при смене режима
       messageInput.value = '';
       messageInput.style.height = 'auto';
       sendButton.disabled = true;
@@ -526,7 +521,7 @@ async function sendMessage() {
 }
 
 // ==========================================
-// ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ (POLLINATIONS)
+// ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ (POLLINATIONS С МОДЕЛЬЮ FLUX)
 // ==========================================
 async function generateImage(prompt) {
   if (welcomeScreen) welcomeScreen.style.display = 'none';
@@ -549,8 +544,8 @@ async function generateImage(prompt) {
   try {
     // Кодируем текст для URL
     const encodedPrompt = encodeURIComponent(prompt);
-    // Формируем URL для Pollinations (бесплатно, без ключа)
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&width=512&height=512`;
+    // Используем модель flux для лучшего качества
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=flux&nologo=true&width=768&height=768`;
     
     // Создаем картинку, чтобы проверить, загрузилась ли она
     const img = new Image();
