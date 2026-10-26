@@ -10,13 +10,18 @@
   --bg-color: #ffffff;
   --sidebar-bg: #f9fafb;
   --border-color: #e5e7eb;
-  --chat-bg: #f3f4f6; 
+  
+  /* Фон чата сделали еще темнее */
+  --chat-bg: #e5e7eb; 
   --user-message-bg: #ffffff; 
   --ai-message-bg: transparent; 
+  
+  /* Шапка темнее фона чата */
+  --header-bg: #d1d5db; 
+  
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --sidebar-width: 260px;
-  --header-bg-light: #e0f2fe; /* Светло-голубой для шапки */
 }
 
 body.dark-theme {
@@ -28,12 +33,16 @@ body.dark-theme {
   --bg-color: #1f2937;
   --sidebar-bg: #111827;
   --border-color: #374151;
+  
   --chat-bg: #111827; 
   --user-message-bg: #374151; 
   --ai-message-bg: transparent; 
+  
+  /* В темной теме шапка тоже темнее фона */
+  --header-bg: #0f172a; 
+  
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --header-bg-light: #1e3a8a; /* Темно-синий для темной темы */
 }
 
 * {
@@ -235,25 +244,25 @@ body {
   flex-direction: column;
   height: 100vh;
   min-width: 0;
-  background-color: var(--chat-bg); /* Контрастный фон */
+  background-color: var(--chat-bg); 
   position: relative;
   transition: background-color 0.3s;
 }
 
-/* --- ЗАКРЕПЛЕННАЯ ШАПКА --- */
+/* --- ЗАКРЕПЛЕННАЯ ШАПКА (ТЕМНЕЕ ФОНА) --- */
 .chat-header {
   padding: 10px 16px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--header-bg-light); /* Светло-голубая шапка */
+  background-color: var(--header-bg); /* Темнее фона */
   flex-shrink: 0;
-  z-index: 100; /* Чтобы шапка была поверх сообщений */
+  z-index: 100; 
   width: 100%;
   gap: 8px;
   transition: background-color 0.3s, border-color 0.3s;
-  position: sticky; /* Закрепляем шапку */
+  position: sticky; 
   top: 0;
 }
 
@@ -331,7 +340,7 @@ body {
   flex-direction: column;
   align-items: stretch; 
   overscroll-behavior-y: contain; 
-  padding-bottom: 20px; /* Уменьшили отступ снизу */
+  padding-bottom: 20px; 
 }
 
 .message-wrapper {
@@ -412,10 +421,10 @@ body {
 @keyframes typing-animation { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
 
 /* ==========================================
-   ПОЛЕ ВВОДА (ДВЕ РАМКИ)
+   ПОЛЕ ВВОДА
    ========================================== */
 .input-container {
-  padding: 12px 24px 16px; /* Уменьшили отступы */
+  padding: 12px 24px 16px; 
   background-color: var(--chat-bg);
   display: flex;
   flex-direction: column;
@@ -508,27 +517,35 @@ body {
 .send-btn:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; }
 
 /* ==========================================
-   АДАПТИВНОСТЬ (УЛУЧШЕНО ДЛЯ ТЕЛЕФОНОВ)
+   АДАПТИВНОСТЬ (ИСПРАВЛЕНО ПОДНЯТИЕ ПОЛЯ)
    ========================================== */
 @media (max-width: 768px) {
   .sidebar { position: fixed; top: 0; left: 0; height: 100vh; box-shadow: 2px 0 10px rgba(0,0,0,0.2); transform: translateX(0); padding-bottom: 60px; }
   .sidebar.hidden { transform: translateX(-100%); }
   
-  /* Уменьшаем шапку на телефоне */
   .chat-header { padding: 8px 10px; gap: 4px; }
   .chat-header-right { gap: 4px; }
   .provider-select { max-width: 70px; font-size: 10px; padding: 2px 4px; }
   .chat-title { font-size: 15px; max-width: 80px; }
   .hamburger-btn, .theme-toggle-btn { padding: 4px; font-size: 16px; }
 
-  /* Поле ввода на телефоне */
+  /* МЕНЯЕМ ВЫСОТУ ОКНА, ЧТОБЫ ПОЛЕ ВВОДА БЫЛО ВЫШЕ */
+  .main-content {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   .messages-container { 
     padding: 12px; 
-    padding-bottom: 10px; /* Убираем лишний отступ */
+    /* Убираем жесткое ограничение высоты, даем flex-контейнеру распределить место */
+    flex: 1; 
+    overflow-y: auto;
+    padding-bottom: 10px;
   }
   
   .input-container { 
-    padding: 6px 10px 10px; /* Поднимаем вверх */
+    padding: 6px 10px 8px; /* Еще сильнее уменьшили отступы */
     gap: 4px;
   }
   
