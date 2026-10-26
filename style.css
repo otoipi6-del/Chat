@@ -11,12 +11,10 @@
   --sidebar-bg: #f9fafb;
   --border-color: #e5e7eb;
   
-  /* Фон чата сделали еще темнее */
   --chat-bg: #e5e7eb; 
   --user-message-bg: #ffffff; 
   --ai-message-bg: transparent; 
   
-  /* Шапка темнее фона чата */
   --header-bg: #d1d5db; 
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -38,7 +36,6 @@ body.dark-theme {
   --user-message-bg: #374151; 
   --ai-message-bg: transparent; 
   
-  /* В темной теме шапка тоже темнее фона */
   --header-bg: #0f172a; 
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -249,14 +246,14 @@ body {
   transition: background-color 0.3s;
 }
 
-/* --- ЗАКРЕПЛЕННАЯ ШАПКА (ТЕМНЕЕ ФОНА) --- */
+/* --- ЗАКРЕПЛЕННАЯ ШАПКА --- */
 .chat-header {
   padding: 10px 16px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--header-bg); /* Темнее фона */
+  background-color: var(--header-bg); 
   flex-shrink: 0;
   z-index: 100; 
   width: 100%;
@@ -517,7 +514,7 @@ body {
 .send-btn:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; }
 
 /* ==========================================
-   АДАПТИВНОСТЬ (ИСПРАВЛЕНО ПОДНЯТИЕ ПОЛЯ)
+   АДАПТИВНОСТЬ (ИСПРАВЛЕНИЕ ВЫСОТЫ)
    ========================================== */
 @media (max-width: 768px) {
   .sidebar { position: fixed; top: 0; left: 0; height: 100vh; box-shadow: 2px 0 10px rgba(0,0,0,0.2); transform: translateX(0); padding-bottom: 60px; }
@@ -529,24 +526,29 @@ body {
   .chat-title { font-size: 15px; max-width: 80px; }
   .hamburger-btn, .theme-toggle-btn { padding: 4px; font-size: 16px; }
 
-  /* МЕНЯЕМ ВЫСОТУ ОКНА, ЧТОБЫ ПОЛЕ ВВОДА БЫЛО ВЫШЕ */
+  /* ИСПОЛЬЗУЕМ 100dvh ДЛЯ ТОЧНОЙ ВЫСОТЫ ЭКРАНА */
+  body {
+    height: 100dvh; /* Динамическая высота вьюпорта */
+  }
+
   .main-content {
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
   }
 
   .messages-container { 
     padding: 12px; 
-    /* Убираем жесткое ограничение высоты, даем flex-контейнеру распределить место */
     flex: 1; 
     overflow-y: auto;
     padding-bottom: 10px;
   }
   
   .input-container { 
-    padding: 6px 10px 8px; /* Еще сильнее уменьшили отступы */
+    padding: 6px 10px 8px; 
     gap: 4px;
+    /* Убеждаемся, что поле ввода прижато к низу */
+    margin-bottom: 0; 
   }
   
   .top-box { padding: 8px 12px; }
