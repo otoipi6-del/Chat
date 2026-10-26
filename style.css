@@ -411,37 +411,39 @@ body {
 .action-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
 /* ==========================================
-   СТИЛИ ДЛЯ БЛОКОВ КОДА (СВЕТЛАЯ ТЕМА С ГОЛУБИЗНОЙ)
+   СТИЛИ ДЛЯ БЛОКОВ КОДА (СЕРО-ГОЛУБЫЕ)
    ========================================== */
 .code-block {
-  background-color: #e0f2fe; /* Светло-голубой фон */
+  background-color: #f0f4f8; /* Очень светлый серо-голубой */
   border-radius: 8px;
   margin: 12px 0;
-  overflow: hidden;
-  border: 1px solid #bae6fd; /* Голубая рамка */
+  overflow: hidden; /* Скрываем всё, что вылезает за пределы */
+  border: 1px solid #cbd5e1; /* Серо-голубая рамка */
+  max-width: 100%; /* Ограничиваем ширину */
+  box-sizing: border-box;
 }
 
 .code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #bae6fd; /* Чуть темнее фона блока */
+  background-color: #e2e8f0; /* Серо-голубой для шапки */
   padding: 6px 12px;
-  border-bottom: 1px solid #bae6fd;
+  border-bottom: 1px solid #cbd5e1;
 }
 
 .code-lang {
-  color: #0369a1; /* Синий текст для языка */
+  color: #475569; /* Темно-серый текст для языка */
   font-size: 12px;
   font-family: monospace;
   text-transform: uppercase;
 }
 
-/* Кнопка копирования кода (БЕЛАЯ) */
+/* Кнопка копирования кода (белая с серой рамкой) */
 .code-copy-btn {
-  background: #ffffff; /* Белый фон */
-  border: 1px solid #0369a1; /* Синяя рамка */
-  color: #0369a1; /* Синий текст */
+  background: #ffffff; 
+  border: 1px solid #94a3b8; /* Серая рамка */
+  color: #334155; /* Темно-серый текст */
   font-size: 12px;
   cursor: pointer;
   display: flex;
@@ -450,25 +452,27 @@ body {
   padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.2s;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .code-copy-btn:hover {
-  background-color: #f0f9ff;
-  border-color: #0284c7;
+  background-color: #f8fafc;
+  border-color: #64748b;
 }
 
 .code-block pre {
   margin: 0;
   padding: 12px;
-  overflow-x: auto;
+  overflow-x: auto; /* Добавляем горизонтальную прокрутку, если код длинный */
+  max-width: 100%;
 }
 
 .code-block code {
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
-  color: #0c4a6e; /* Темно-синий текст для кода */
+  color: #1e293b; /* Темно-серый текст для кода */
   line-height: 1.5;
+  white-space: pre; /* Сохраняем форматирование */
 }
 
 /* ==========================================
