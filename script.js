@@ -2,7 +2,7 @@
 // НАСТРОЙКИ И ДАННЫЕ ПРОВАЙДЕРОВ
 // ==========================================
 const PROXY_URL = "https://chat-ai-proxy.otoipi6.workers.dev";
-const GROQ_GAS_URL = "https://script.google.com/macros/s/ТВОЙ_ID/exec"; // НЕ ЗАБУДЬ ВСТАВИТЬ СВОЙ URL!
+const GROQ_GAS_URL = "https://script.google.com/macros/s/AKfycbxP2fjnGgAPBezXQQpnVzLPJwjGVVB-POlL942mxAGxeBpYgkeroacf3FPNhXwBWuXu8A/exec"; // НЕ ЗАБУДЬ ВСТАВИТЬ СВОЙ URL!
 
 const PROVIDER_MODELS = {
   groq: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'],
