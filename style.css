@@ -386,14 +386,14 @@ body {
 .message-wrapper.ai .message-body {
   align-items: flex-start;
   max-width: 100%;
-  width: 100%; /* Жестко задаем ширину */
+  width: 100%;
 }
 
 .message-wrapper.ai .message-text {
   background-color: transparent;
   padding: 0;
   color: var(--text-primary);
-  width: 100%; /* Текст занимает всю ширину body */
+  width: 100%;
   word-wrap: break-word;
 }
 
@@ -414,7 +414,40 @@ body {
 .action-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
 /* ==========================================
-   СТИЛИ ДЛЯ БЛОКОВ КОДА (ФИКСАЦИЯ)
+   АНИМАЦИЯ ИНДИКАТОРА НАБОРА (ТРИ ТОЧКИ)
+   ========================================== */
+.typing-indicator { 
+  display: none; 
+  gap: 6px; 
+  padding: 12px 16px; 
+  align-items: center;
+}
+
+.typing-dot { 
+  width: 8px; 
+  height: 8px; 
+  background-color: var(--text-secondary); 
+  border-radius: 50%; 
+  animation: typing-animation 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-animation {
+  0%, 80%, 100% { 
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================
+   СТИЛИ ДЛЯ БЛОКОВ КОДА
    ========================================== */
 .code-block {
   background-color: #f0f4f8; 
@@ -422,8 +455,8 @@ body {
   margin: 12px 0;
   overflow: hidden; 
   border: 1px solid #cbd5e1; 
-  max-width: 100%; /* Не вылезаем за пределы родителя */
-  width: 100%; /* Растягиваем на всю ширину родителя */
+  max-width: 100%; 
+  width: 100%; 
   box-sizing: border-box;
 }
 
@@ -466,7 +499,7 @@ body {
 .code-block pre {
   margin: 0;
   padding: 12px;
-  overflow-x: auto; /* Горизонтальный скролл, если код шире */
+  overflow-x: auto; 
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -476,7 +509,7 @@ body {
   font-size: 14px;
   color: #1e293b; 
   line-height: 1.5;
-  white-space: pre; /* Сохраняем форматирование кода */
+  white-space: pre; 
 }
 
 /* ==========================================
