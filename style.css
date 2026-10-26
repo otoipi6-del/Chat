@@ -412,34 +412,34 @@ body {
 
 /* Стили для блоков кода */
 .code-block {
-  background-color: #1e1e1e; /* Темный фон для кода */
+  background-color: #2d3748; /* Мягкий темно-серый/синий фон */
   border-radius: 8px;
   margin: 12px 0;
   overflow: hidden;
-  border: 1px solid #333;
+  border: 1px solid #4a5568;
 }
 
 .code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #2d2d2d;
+  background-color: #1a202c; /* Чуть темнее для шапки блока */
   padding: 6px 12px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #4a5568;
 }
 
 .code-lang {
-  color: #9ca3af;
+  color: #a0aec0;
   font-size: 12px;
   font-family: monospace;
   text-transform: uppercase;
 }
 
-/* Кнопка копирования кода (теперь белая) */
+/* Кнопка копирования кода (с рамкой) */
 .code-copy-btn {
   background: transparent;
-  border: none;
-  color: #ffffff; /* Белый цвет */
+  border: 1px solid #a0aec0; /* Добавили рамку */
+  color: #ffffff; 
   font-size: 12px;
   cursor: pointer;
   display: flex;
@@ -447,11 +447,12 @@ body {
   gap: 4px;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: background 0.2s;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .code-copy-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
 }
 
 .code-block pre {
@@ -463,7 +464,7 @@ body {
 .code-block code {
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
-  color: #d4d4d4; /* Светлый текст для кода */
+  color: #e2e8f0; /* Светлый текст для кода */
   line-height: 1.5;
 }
 
