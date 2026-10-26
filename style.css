@@ -411,37 +411,37 @@ body {
 .action-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
 
 /* ==========================================
-   СТИЛИ ДЛЯ БЛОКОВ КОДА (СВЕТЛАЯ ТЕМА)
+   СТИЛИ ДЛЯ БЛОКОВ КОДА (СВЕТЛАЯ ТЕМА С ГОЛУБИЗНОЙ)
    ========================================== */
 .code-block {
-  background-color: #f8f9fa; /* Очень светлый серый, почти сливается с фоном */
+  background-color: #e0f2fe; /* Светло-голубой фон */
   border-radius: 8px;
   margin: 12px 0;
   overflow: hidden;
-  border: 1px solid #e5e7eb; /* Легкая рамка */
+  border: 1px solid #bae6fd; /* Голубая рамка */
 }
 
 .code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f1f3f5; /* Чуть темнее фона блока */
+  background-color: #bae6fd; /* Чуть темнее фона блока */
   padding: 6px 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #bae6fd;
 }
 
 .code-lang {
-  color: #6b7280; /* Серый текст для языка */
+  color: #0369a1; /* Синий текст для языка */
   font-size: 12px;
   font-family: monospace;
   text-transform: uppercase;
 }
 
-/* Кнопка копирования кода (с рамкой) */
+/* Кнопка копирования кода (БЕЛАЯ) */
 .code-copy-btn {
-  background: transparent;
-  border: 1px solid #d1d5db; /* Светлая рамка */
-  color: #4b5563; /* Темно-серый текст */
+  background: #ffffff; /* Белый фон */
+  border: 1px solid #0369a1; /* Синяя рамка */
+  color: #0369a1; /* Синий текст */
   font-size: 12px;
   cursor: pointer;
   display: flex;
@@ -450,11 +450,12 @@ body {
   padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
 .code-copy-btn:hover {
-  background-color: #e5e7eb;
-  border-color: #9ca3af;
+  background-color: #f0f9ff;
+  border-color: #0284c7;
 }
 
 .code-block pre {
@@ -466,7 +467,7 @@ body {
 .code-block code {
   font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
-  color: #1f2937; /* Темный текст для кода */
+  color: #0c4a6e; /* Темно-синий текст для кода */
   line-height: 1.5;
 }
 
